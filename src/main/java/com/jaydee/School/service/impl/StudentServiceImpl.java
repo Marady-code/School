@@ -2,7 +2,6 @@ package com.jaydee.School.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jaydee.School.Exception.ResourceNotFound;
@@ -10,11 +9,15 @@ import com.jaydee.School.entity.Student;
 import com.jaydee.School.repository.StudentRepository;
 import com.jaydee.School.service.StudentService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService{
 
-	@Autowired
-	private StudentRepository studentRepository;
+	
+	private final StudentRepository studentRepository;
+//	private final StudentService studentService;
 
 	@Override
 	public Student create(Student student) {
@@ -24,7 +27,7 @@ public class StudentServiceImpl implements StudentService{
 	@Override
 	public Student getById(Long id) {
 		return studentRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound("Student",id));
+				.orElseThrow(() -> new ResourceNotFound(id));
 	}
 
 	@Override
@@ -35,7 +38,7 @@ public class StudentServiceImpl implements StudentService{
 	@Override
 	public void deleteById(Long id) {
 		if(!studentRepository.existsById(id)) {
-			throw new ResourceNotFound("Studednt", id);
+			throw new ResourceNotFound(id);
 		}
 			studentRepository.deleteById(id);
 	}

@@ -1,10 +1,11 @@
 package com.jaydee.School.Controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jaydee.School.DTO.StudentDTO;
+import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.entity.Student;
 import com.jaydee.School.mapper.StudentMapper;
 import com.jaydee.School.service.StudentService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -37,9 +38,9 @@ public class StudentController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<?> getById(@PathVariable("id") Long id){
-		Student student = studentService.getById(id);
-		return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+	public ResponseEntity<?> GetById(@PathVariable("id") Long id){
+			Student student = studentService.getById(id);
+			return ResponseEntity.ok(studentMapper.toStudentDTO(student));	
 	}
 	
 	@GetMapping
@@ -51,16 +52,22 @@ public class StudentController {
 		return ResponseEntity.ok(students);
 	}
 	
+	@DeleteMapping("{id}")
 	public ResponseEntity<?> deleteById(@PathVariable("id") Long id){
-		try {
-			studentService.deleteById(id);
-			return ResponseEntity.ok("Student with id :" + id + "deleted successfully.");
-		}catch(EntityNotFoundException e){
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Error : Student with id :\" + id + Not found!");
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("An error occurred while deleting the students");
-		}
+//		Student student= studentService.getById(id);
+//		return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+		
+		 try {
+		        studentService.deleteById(id);
+		        return ResponseEntity.ok(Collections.singletonMap("message", "Student with id = " + id + " deleted successfully."));
+		    } catch (ResourceNotFound e) {
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		                .body(Collections.singletonMap("error", e.getMessage()));
+		    } catch (Exception e) {
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                .body(Collections.singletonMap("error", "An unexpected error occurred."));
+		    }
+		
 	}
+	
 }
