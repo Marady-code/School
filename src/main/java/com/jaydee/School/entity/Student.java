@@ -9,9 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "students")
@@ -22,16 +26,15 @@ public class Student {
 	@Column(name = "Student_id")
 	private long id;
 
-	@NotBlank(message = "First name is required")
-	@Column(name = "First_name")
+//	@NotBlank(message = "First name is required")
+	@Column(name = "First_name", nullable = false)
 	private String firstName;
 
-	@NotBlank(message = "Last name is required")
-	@Column(name = "Last_name")
+//	@NotBlank(message = "Last name is required")
+	@Column(name = "Last_name", nullable = false)
 	private String lastName;
 
-	@NotBlank(message = "Gender is required")
-	@NotBlank(message = "Gender should be either male or female")
+//	@NotBlank(message = "Gender is required")
 	@Column(name = "Gender")
 	private String gender;
 
@@ -39,11 +42,13 @@ public class Student {
 	private LocalDate dob;
 
 	@Email(message = "Invalid email format")
-	@NotBlank(message = "Email is required")
-	@Column(name = "student_email")
+//	@NotBlank(message = "Email is required")
+	@NotNull
+	@Column(name = "Student_email")
 	private String email;
 
-	@NotBlank(message = "Password is required")
-	@Column(name = "student_password")
+//	@NotBlank(message = "Password is required")
+	@NotNull
+	@Column(name = "Student_password", nullable = false, unique = true)
 	private String password;
 }

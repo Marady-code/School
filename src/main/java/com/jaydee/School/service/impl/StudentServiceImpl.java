@@ -1,21 +1,20 @@
 package com.jaydee.School.service.impl;
 
-import com.jaydee.School.Exception.ResourceNotFound;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.entity.Student;
 import com.jaydee.School.repository.StudentRepository;
 import com.jaydee.School.service.StudentService;
 
-import java.util.List;
-
 @Service
-@RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService{
 
-	private final StudentRepository studentRepository;
+	@Autowired
+	private StudentRepository studentRepository;
 
 	@Override
 	public Student create(Student student) {
@@ -30,18 +29,23 @@ public class StudentServiceImpl implements StudentService{
 
 	@Override
 	public List<Student> getAllStudent() {
-		return List.of();
+		return studentRepository.findAll();
 	}
 
 	@Override
-	public void deleteStudentById(Long id) {
-
+	public void deleteById(Long id) {
+		if(!studentRepository.existsById(id)) {
+			throw new ResourceNotFound("Studednt", id);
+		}
+			studentRepository.deleteById(id);
 	}
 
 	@Override
 	public Student updateStudent(Student student) {
-		return null;
+		getById(student.getId());
+		return studentRepository.save(student);
 	}
+
 
 
 

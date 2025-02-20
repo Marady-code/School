@@ -7,5 +7,5 @@ import com.jaydee.School.entity.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long>{
-
+//	void DeleteById(@Param("id") Long id);
 }
