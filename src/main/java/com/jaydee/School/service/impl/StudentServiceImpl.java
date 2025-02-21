@@ -22,13 +22,13 @@ public class StudentServiceImpl implements StudentService{
 
 	@Override
 	public Student create(Student student) {
-		return studentRepository.save(student);
+		return studentRepository.saveAndFlush(student);
 	}
 
 	@Override
 	public Student getById(Long id) {
 		return studentRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound(id));
+				.orElseThrow(() -> new ResourceNotFound("Student",id));
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class StudentServiceImpl implements StudentService{
 	@Override
 	public void deleteById(Long id) {
 		if(!studentRepository.existsById(id)) {
-			throw new ResourceNotFound(id);
+			throw new ResourceNotFound("Student",id);
 		}
 			studentRepository.deleteById(id);
 	}
@@ -57,8 +57,7 @@ public class StudentServiceImpl implements StudentService{
 				existingStudent.setPassword(studentUpdate.getPassword());
 				return studentRepository.save(existingStudent);
 			})
-		
-		.orElseThrow(() -> new ResourceNotFound(id));
+		.orElseThrow(() -> new ResourceNotFound("Student", id));
 	}
 
 

@@ -39,9 +39,14 @@ public class StudentController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<?> GetById(@PathVariable("id") Long id){
+	public ResponseEntity<?> GetById(@PathVariable Long id){
+		try {
 			Student student = studentService.getById(id);
 			return ResponseEntity.ok(studentMapper.toStudentDTO(student));	
+		}catch(ResourceNotFound e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage() ));
+		}
+		
 	}
 	
 	@GetMapping
@@ -54,28 +59,37 @@ public class StudentController {
 	}
 	
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteById(@PathVariable("id") Long id){
-//		Student student= studentService.getById(id);
-//		return ResponseEntity.ok(studentMapper.toStudentDTO(student));
-		
-		 try {
-		        studentService.deleteById(id);
-		        return ResponseEntity.ok(Collections.singletonMap("message", "Student with id = " + id + " deleted successfully."));
-		    } catch (ResourceNotFound e) {
-		        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-		                .body(Collections.singletonMap("error", e.getMessage()));
-		    } catch (Exception e) {
-		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-		                .body(Collections.singletonMap("error", "An unexpected error occurred."));
-		    }
+	public ResponseEntity<?> deleteById(@PathVariable Long id){
+		try {
+			Student student= studentService.getById(id);
+			return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+		}catch(ResourceNotFound e){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage() ));
+		}
+				
+//		 try {
+//		        studentService.deleteById(id);
+//		        return ResponseEntity.ok(Collections.singletonMap("message", "Student with id = " + id + " deleted successfully."));
+//		    } catch (ResourceNotFound e) {
+//		        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//		                .body(Collections.singletonMap("error", e.getMessage()));
+//		    } catch (Exception e) {
+//		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//		                .body(Collections.singletonMap("error", "An unexpected error occurred."));
+//		    }
 		
 	}
 	
 	@PutMapping("{id}")
 	public ResponseEntity<?> Update(@PathVariable Long id, @RequestBody StudentDTO studentDTO){
-		Student student = studentMapper.toEntity(studentDTO);
-		Student updateStudent = studentService.updateStudent(id, student);
-		return ResponseEntity.ok(studentMapper.toStudentDTO(updateStudent));
+		try {
+			Student student = studentMapper.toEntity(studentDTO);
+			Student updateStudent = studentService.updateStudent(id, student);
+			return ResponseEntity.ok(studentMapper.toStudentDTO(updateStudent));
+		}catch(ResourceNotFound e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage() ));
+		}
+		
 	}
 	
 }

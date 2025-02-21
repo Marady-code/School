@@ -36,7 +36,7 @@ public class Student {
 	private String lastName;
 
 	@NotBlank(message = "Gender is required")
-	@Column(name = "Gender")
+	@Column(name = "Gender", nullable = false)
 	private String gender;
 
 	@Column(name = "Date of Birth")
@@ -45,7 +45,7 @@ public class Student {
 	@Email(message = "Invalid email format")
 	@NotBlank(message = "Email is required")
 	@NotNull
-	@Column(name = "Student_email")
+	@Column(name = "Student_email", nullable = false, unique = true)
 	private String email;
 
 	@NotBlank(message = "Password is required")
