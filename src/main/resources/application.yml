@@ -1,5 +1,23 @@
+#server:
+#  port: 8080
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/School
+#    username: SchoolAdmin
+#    password: 150304
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    mvc:
+#      pathmatch:
+#       matching-strategy: ant_path_matcher
+
 server:
   port: 8080
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/School
@@ -11,6 +29,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    mvc:
-      pathmatch:
-       matching-strategy: ant_path_matcher
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.jaydee.School.Controller
+  paths-to-match: /**

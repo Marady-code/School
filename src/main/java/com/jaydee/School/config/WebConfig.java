@@ -1,4 +1,4 @@
-package com.jaydee.School.Controller.config;
+package com.jaydee.School.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
