@@ -1,20 +1,3 @@
-#server:
-#  port: 8080
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/School
-#    username: SchoolAdmin
-#    password: 150304
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
-#    hibernate:
-#      ddl-auto: update
-#    show-sql: true
-#    mvc:
-#      pathmatch:
-#       matching-strategy: ant_path_matcher
-
 server:
   port: 8080
 
@@ -32,6 +15,8 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  liquibase:
+   change-log: classpath:/db/changeLog/Liquibase-changeLog.yaml
 
 springdoc:
   swagger-ui:

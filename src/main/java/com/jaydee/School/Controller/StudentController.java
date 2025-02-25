@@ -2,6 +2,7 @@ package com.jaydee.School.Controller;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,8 @@ public class StudentController {
 		Student student = studentMapper.toEntity(studentDTO);
 		student = studentService.create(student);
 		return ResponseEntity.ok(studentMapper.toStudentDTO(student));
-	}
-
+	}	
+	
 	@GetMapping("{id}")
 	public ResponseEntity<?> GetById(@PathVariable Long id){
 		try {
@@ -49,20 +50,33 @@ public class StudentController {
 		
 	}
 	
+//	@GetMapping
+//	public ResponseEntity<List<Student>> getAllStudents(){
+//			List<Student> students = studentService.getAllStudent();
+//			if(students.isEmpty()) {
+//				return ResponseEntity.noContent().build();
+//			}
+//			return ResponseEntity.ok(students);
+//		
+//		
+//	}
+	
 	@GetMapping
-	public ResponseEntity<List<Student>> getAllStudents(){
-		List<Student> students = studentService.getAllStudent();
-		if(students.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(students);
+	public ResponseEntity<?> getAllStudent(){
+		List<StudentDTO> list = studentService.getAllStudent()
+			.stream()
+			.map(student -> studentMapper.toStudentDTO(student))
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.ok(list);
 	}
+	
 	
 	@DeleteMapping("{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Long id){
 		try {
-			Student student= studentService.getById(id);
-			return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+	        studentService.deleteById(id);
+	        return ResponseEntity.ok(Collections.singletonMap("message", "Student with id = " + id + " deleted successfully."));	
 		}catch(ResourceNotFound e){
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage() ));
 		}

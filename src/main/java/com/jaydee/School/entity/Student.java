@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,28 +29,32 @@ public class Student {
 	private long id;
 
 	@NotBlank(message = "First name is required")
-	@Column(name = "First_name", nullable = false)
+	@Column(name = "first_name", nullable = false)
 	private String firstName;
 
 	@NotBlank(message = "Last name is required")
-	@Column(name = "Last_name", nullable = false)
+	@Column(name = "last_name", nullable = false)
 	private String lastName;
 
 	@NotBlank(message = "Gender is required")
-	@Column(name = "Gender", nullable = false)
+	@Column(name = "gender", nullable = false)
 	private String gender;
 
-	@Column(name = "Date of Birth")
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "date_of_birth", nullable = false)
 	private LocalDate dob;
 
 	@Email(message = "Invalid email format")
 	@NotBlank(message = "Email is required")
-	@NotNull
-	@Column(name = "Student_email", nullable = false, unique = true)
+	@Column(name = "student_email", nullable = false, unique = true)
 	private String email;
 
 	@NotBlank(message = "Password is required")
-	@NotNull
-	@Column(name = "Student_password", nullable = false, unique = true)
+	@Column(name = "student_password", nullable = false, unique = true)
 	private String password;
+	
+//	@Column(name = "Name")
+//	private String getFullName() {
+//        return firstName + " " + lastName;
+//    }
 }

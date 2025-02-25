@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 //	}
 	
 	@ExceptionHandler(ResourceNotFound.class)
-	public ResponseEntity<?> handleResourceNotFound(ResourceNotFound ex){
+	public ResponseEntity<?> handleApiExcception(ResourceNotFound ex){
 		Map<String, Object> response = new HashMap<>();
 		response.put("timestamp", LocalDateTime.now());
 		response.put("status", ex.getStatus().value());

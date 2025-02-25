@@ -7,12 +7,15 @@ import lombok.Data;
 
 @Data
 public class StudentDTO {
-	//private Long id;
+	private Long id;
 	@NotNull
 	private String firstName;
 	@NotNull
 	private String lastName;
 	@NotNull
+	
+//	private String getFullName;
+	
 	private String gender;
 	
 	private LocalDate dob;

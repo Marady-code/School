@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001_init_db_schema
+      author: marady3838@gmail.com
+      changes:
+        - createTable:
+            tableName: students
+            columns:
+              - column:
+                  name: student_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: gender
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: date_of_birth
+                  type: DATE
+                  constraints:
+                    nullable: false  # Change to false if required
+
+              - column:
+                  name: student_email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: student_password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
