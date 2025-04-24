@@ -1,0 +1,4 @@
+student_id,first_name,last_name,gender,date_of_birth,student_email,student_password
+1,John,Doe,Male,2002-05-14,johndoe@example.com,pass123
+2,Jane,Smith,Female,2001-08-21,janesmith@example.com,securepass
+3,David,Johnson,Male,2003-03-30,davidj@example.com,mysecret

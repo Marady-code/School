@@ -1,0 +1,68 @@
+package com.jaydee.School.Controller;
+
+import com.jaydee.School.entity.ExamResult;
+import com.jaydee.School.entity.Role;
+import com.jaydee.School.entity.Student;
+import com.jaydee.School.entity.Teacher;
+import com.jaydee.School.service.ExamResultService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/exam-results")
+public class ExamResultController {
+
+    @Autowired
+    private ExamResultService examResultService;
+
+    @PostMapping
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<ExamResult> createExamResult(@RequestBody ExamResult examResult) {
+        return ResponseEntity.ok(examResultService.createExamResult(examResult));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<ExamResult> updateExamResult(
+            @PathVariable Long id,
+            @RequestBody ExamResult examResult) {
+        return ResponseEntity.ok(examResultService.updateExamResult(id, examResult));
+    }
+
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    public ResponseEntity<List<ExamResult>> getStudentResults(@PathVariable Long studentId) {
+        Student student = new Student();
+        student.setId(studentId);
+        return ResponseEntity.ok(examResultService.getStudentResults(student));
+    }
+
+    @GetMapping("/teacher/{teacherId}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isCurrentUser(#teacherId)")
+    public ResponseEntity<List<ExamResult>> getTeacherResults(@PathVariable Long teacherId) {
+        Teacher teacher = new Teacher();
+        teacher.setId(teacherId);
+        return ResponseEntity.ok(examResultService.getTeacherResults(teacher));
+    }
+
+    @GetMapping("/student/{studentId}/subject/{subject}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    public ResponseEntity<List<ExamResult>> getStudentSubjectResults(
+            @PathVariable Long studentId,
+            @PathVariable String subject) {
+        Student student = new Student();
+        student.setId(studentId);
+        return ResponseEntity.ok(examResultService.getStudentSubjectResults(student, subject));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<Void> deleteExamResult(@PathVariable Long id) {
+        examResultService.deleteExamResult(id);
+        return ResponseEntity.ok().build();
+    }
+} 

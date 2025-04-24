@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002_insert_students
+      author: marady3838@gmail.com
+      runOnChange: true
+      changes:
+        - loadData:
+            tableName: students
+            file: classpath:/db/data/002_student.csv
+            separator: ","
+            columns:
+              - column:
+                  name: student_id
+                  type: NUMERIC
+              - column:
+                  name: first_name
+                  type: STRING
+              - column:
+                  name: last_name
+                  type: STRING
+              - column:
+                  name: gender
+                  type: STRING
+              - column:
+                  name: date_of_birth
+                  type: DATE
+              - column:
+                  name: student_email
+                  type: STRING
+              - column:
+                  name: student_password
+                  type: STRING
+                
