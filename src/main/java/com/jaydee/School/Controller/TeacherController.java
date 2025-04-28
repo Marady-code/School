@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.jaydee.School.DTO.TeacherDTO;
 import com.jaydee.School.Exception.ResourceNotFound;
@@ -31,6 +32,7 @@ public class TeacherController {
 	private final TeacherService teacherService;
 	private final TeacherMapper teacherMapper;
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody TeacherDTO teacherDTO){
 		Teacher teacher = teacherMapper.toEntity(teacherDTO);
@@ -38,6 +40,7 @@ public class TeacherController {
 		return ResponseEntity.ok(teacherMapper.toTeacherDTO(teacher));
 	}
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping("{id}")
 	public ResponseEntity<?> getByID(@PathVariable Long id){
 		try {
@@ -48,6 +51,7 @@ public class TeacherController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping
 	public ResponseEntity<?> getAllTeacher(){
 		List<TeacherDTO> list = teacherService.getAllTeachers()
@@ -58,6 +62,7 @@ public class TeacherController {
 		return ResponseEntity.ok(list);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Long id){
 		try {
@@ -68,7 +73,7 @@ public class TeacherController {
 		}
 	}
 	
-	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("{id}")
 	public ResponseEntity<?> Update(@PathVariable Long id, @RequestBody TeacherDTO teacherDTO){
 		try {

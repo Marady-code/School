@@ -9,25 +9,27 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.jaydee.School.entity.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-
-@Data
-@RequiredArgsConstructor
-@AllArgsConstructor
-public class UserDetailsImpl implements UserDetails {
+public class UserPrincipal implements UserDetails {
     private Long id;
     private String username;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.authorities = Collections.singletonList(
-            new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+    public UserPrincipal(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    public static UserPrincipal create(User user) {
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+
+        return new UserPrincipal(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singletonList(authority)
         );
     }
 
@@ -36,8 +38,8 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getUsername() {
+        return username;
     }
 
     @Override
@@ -46,8 +48,8 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override

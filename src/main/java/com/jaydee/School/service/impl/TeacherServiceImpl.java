@@ -14,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class TeacherServiceImpl implements TeacherService{
+public class TeacherServiceImpl implements TeacherService {
 
 	private final TeacherRepository teacherRepository;
 
 	@Override
+	@Transactional
 	public Teacher create(Teacher teacher) {
+		validateTeacher(teacher);
 		return teacherRepository.save(teacher);
 	}
 
@@ -35,12 +37,12 @@ public class TeacherServiceImpl implements TeacherService{
 	}
 
 	@Override
+	@Transactional
 	public void deleteTeacherById(Long id) {
-		if(!teacherRepository.existsById(id)) {
+		if (!teacherRepository.existsById(id)) {
 			throw new ResourceNotFound("Teacher", id);
 		}
-			teacherRepository.deleteById(id);
-		
+		teacherRepository.deleteById(id);
 	}
 
 	@Override
@@ -48,14 +50,38 @@ public class TeacherServiceImpl implements TeacherService{
 	public Teacher updateTeacher(Long id, Teacher teacherUpdate) {
 		return teacherRepository.findById(id)
 				.map(existingTeacher -> {
-					existingTeacher.setName(teacherUpdate.getName());
-					existingTeacher.setDob(teacherUpdate.getDob());
-					existingTeacher.setPhoneNumber(teacherUpdate.getPhoneNumber());
-					existingTeacher.setSubject(teacherUpdate.getSubject());
-					existingTeacher.setJoinDate(teacherUpdate.getJoinDate());
-					
+					if (teacherUpdate.getName() != null && !teacherUpdate.getName().isBlank()) {
+						existingTeacher.setName(teacherUpdate.getName());
+					}
+					if (teacherUpdate.getDob() != null) {
+						existingTeacher.setDob(teacherUpdate.getDob());
+					}
+					if (teacherUpdate.getPhoneNumber() != null) {
+						existingTeacher.setPhoneNumber(teacherUpdate.getPhoneNumber());
+					}
+					if (teacherUpdate.getSubject() != null && !teacherUpdate.getSubject().isBlank()) {
+						existingTeacher.setSubject(teacherUpdate.getSubject());
+					}
+					if (teacherUpdate.getJoinDate() != null) {
+						existingTeacher.setJoinDate(teacherUpdate.getJoinDate());
+					}
 					return teacherRepository.save(existingTeacher);
 				})
 				.orElseThrow(() -> new ResourceNotFound("Teacher", id));
+	}
+
+	private void validateTeacher(Teacher teacher) {
+		if (teacher.getName() == null || teacher.getName().isBlank()) {
+			throw new IllegalArgumentException("Teacher name cannot be null or empty");
+		}
+		if (teacher.getSubject() == null || teacher.getSubject().isBlank()) {
+			throw new IllegalArgumentException("Teacher subject cannot be null or empty");
+		}
+		if (teacher.getPhoneNumber() != null && !teacher.getPhoneNumber().matches("\\d{10}")) {
+			throw new IllegalArgumentException("Phone number must be 10 digits");
+		}
+		if (teacher.getJoinDate() == null) {
+			throw new IllegalArgumentException("Join date cannot be null");
+		}
 	}
 }

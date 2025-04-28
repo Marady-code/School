@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import com.jaydee.School.mapper.AttendanceMapper;
 import com.jaydee.School.service.AttendanceService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,12 +31,14 @@ public class AttendanceController {
 	private final AttendanceService attendanceService;
 	private final AttendanceMapper attendanceMapper;
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping
 	public ResponseEntity<?> getAllAttendances(){
 		List<AttendanceDTO> attendances = attendanceService.getAllAttendances();
 		return ResponseEntity.ok(attendances);	
 	}
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@PostMapping
 	public ResponseEntity<AttendanceDTO> markAttendace(@RequestBody AttendanceDTO attendanceDTO){
 		AttendanceDTO savedAttendance = attendanceService.markAttendance(attendanceDTO);
@@ -42,6 +46,7 @@ public class AttendanceController {
 	}
 	
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
 	@GetMapping("/students/{studentId}")
 	public ResponseEntity<List<AttendanceDTO>> getAttendanceByStudent(@PathVariable Long studentId){
 		try {
@@ -59,6 +64,7 @@ public class AttendanceController {
 //		return ResponseEntity.ok(attendances);
 //	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("{studentId}")
 	public ResponseEntity<?> UpdateAttendance(@PathVariable Long studentId, @RequestBody AttendanceDTO attendanceDTO){
 		try {
@@ -71,6 +77,8 @@ public class AttendanceController {
 		
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("{studentId}")
 	public ResponseEntity<?> DeleteAttendanceByStudentId(@PathVariable Long id){
 		try {
 			attendanceService.deleteAttendanceByStudentId(id);

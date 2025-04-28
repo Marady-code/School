@@ -1,4 +1,3 @@
-select * from admin
 
 select * from students
 

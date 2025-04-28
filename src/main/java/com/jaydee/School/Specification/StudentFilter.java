@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class StudentFilter {
-	private long id;
+	private String studentId;
 	
 	private String firstName;
 	private String lastName;

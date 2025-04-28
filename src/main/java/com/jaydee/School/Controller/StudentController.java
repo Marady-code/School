@@ -1,12 +1,12 @@
 package com.jaydee.School.Controller;
 
 import java.util.Collections;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +33,7 @@ public class StudentController {
 	private final StudentService studentService;
 	private final StudentMapper studentMapper;
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody StudentDTO studentDTO){
 		Student student = studentMapper.toEntity(studentDTO);
@@ -40,6 +41,7 @@ public class StudentController {
 		return ResponseEntity.ok(studentMapper.toStudentDTO(student));
 	}	
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
 	@GetMapping("{id}")
 	public ResponseEntity<?> GetById(@PathVariable Long id){
 		try {
@@ -63,6 +65,7 @@ public class StudentController {
 //		
 //	}
 	
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping
 	public ResponseEntity<?> getAllStudent(){
 		List<StudentDTO> list = studentService.getAllStudent()
@@ -74,6 +77,7 @@ public class StudentController {
 	}
 	
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Long id){
 		try {
@@ -87,6 +91,7 @@ public class StudentController {
 		
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("{id}")
 	public ResponseEntity<?> Update(@PathVariable Long id, @RequestBody StudentDTO studentDTO){
 		try {

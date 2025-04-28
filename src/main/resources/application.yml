@@ -1,24 +1,50 @@
 server:
-  port: 8080
+#  port: 8080
+#  servlet:
+#    context-path: /api
+#  tomcat:
+#    max-threads: 200
+#    min-spare-threads: 20
+#    max-connections: 10000
+#    connection-timeout: 5000
 
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/School
-    username: SchoolAdmin
+    username: School
     password: 150304
-    driver-class-name: org.postgresql.Driver
+#    hikari:
+#      maximum-pool-size: 10
+#      minimum-idle: 5
+#      idle-timeout: 300000
+#      connection-timeout: 20000
+#      max-lifetime: 1200000
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+#    show-sql: true
+    properties:
+      hibernate:
+#        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        jdbc:
+#          batch_size: 50
+#          batch_versioned_data: true
+#        order_inserts: true
+#        order_updates: true
+#        generate_statistics: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   liquibase:
-   change-log: classpath:/db/changeLog/Liquibase-changeLog.yaml
-   enabled: false
-   clear-checksums: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: false
+    default-schema: public
+
+#  spring:
+#    jwt:
+#      secret: 9a4f2c8d3b7a1e6f45c8a0b3f267d8b1d4e6f3c8a9d2b5f8e3a7c4d9f2e5b8a
+#      expiration: 86400000 # 24 hours
 
 springdoc:
   swagger-ui:
@@ -28,7 +54,24 @@ springdoc:
     tags-sorter: alpha
     disable-swagger-default-url: true
     display-request-duration: true
+    tryItOutEnabled: true
+    filter: true
   api-docs:
-    path: /v3/api-docs
+    path: /api-docs
   packages-to-scan: com.jaydee.School.Controller
   paths-to-match: /**
+
+#logging:
+#  level:
+#    root: INFO
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#    com.jaydee.School: DEBUG
+#    org.springframework.security: DEBUG
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#  file:
+#    name: logs/application.log
+#    max-size: 10MB
+#    max-history: 30

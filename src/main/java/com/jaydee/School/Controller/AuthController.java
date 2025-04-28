@@ -1,37 +1,40 @@
 package com.jaydee.School.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jaydee.School.DTO.ApiResponse;
 import com.jaydee.School.DTO.LoginDTO;
 import com.jaydee.School.DTO.UserDTO;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.ok(userService.login(loginDTO));
+    public ResponseEntity<ApiResponse<UserDTO>> login(@Valid @RequestBody LoginDTO loginDTO) {
+        UserDTO userDTO = userService.login(loginDTO);
+        return ResponseEntity.ok(ApiResponse.success("Login successful", userDTO));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<UserDTO>> register(@Valid @RequestBody User user) {
         if (userService.existsByUsername(user.getUsername())) {
             return ResponseEntity
                 .badRequest()
-                .body(new MessageResponse("Username is already taken!"));
+                .body(ApiResponse.error("Username is already taken"));
         }
 
 //        if (userService.existsByEmail(user.getEmail())) {
@@ -41,44 +44,15 @@ public class AuthController {
 //        }
 
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        UserDTO userDTO = userService.getUserByUsername(createdUser.getUsername());
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(ApiResponse.success("User registered successfully", userDTO));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        // Implement logout logic here if using session-based authentication
+        return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
     }
 }
-
-class LoginRequest {
-    private String username;
-    private String password;
-
-    // Getters and setters
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-}
-
-class MessageResponse {
-    private String message;
-
-    public MessageResponse(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-} 

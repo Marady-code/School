@@ -1,5 +1,7 @@
 package com.jaydee.School.DTO;
 
+import java.time.LocalDateTime;
+
 import com.jaydee.School.entity.Role;
 import lombok.Data;
 
@@ -13,5 +15,9 @@ public class UserDTO {
 	private String phoneNumber;
 	
 	private Role role;
+	
+	private LocalDateTime createdAt;
+	
+	private LocalDateTime updatedAt;
 
 }

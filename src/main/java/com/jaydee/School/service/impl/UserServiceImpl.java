@@ -3,6 +3,9 @@ package com.jaydee.School.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,8 @@ import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.UserRepository;
 import com.jaydee.School.service.UserService;
+import com.jaydee.School.Specification.UserFilter;
+import com.jaydee.School.Specification.UserSpec;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +33,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDTO login(LoginDTO loginDTO) {
 		User user = userRepository.findByUsername(loginDTO.getUsername())
-			.orElseThrow(() -> new RuntimeException("Invalid username or password"));
+			.orElseThrow(() -> new RuntimeException("User not found"));
 
 		if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
 			throw new RuntimeException("Invalid username or password");
@@ -92,13 +97,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> getAllUser() {
-//		return adminRepository.findAll()
-//				.stream()
-//				.map(AdminMapper::toAdminDTO)
-//				.toList();
-		
 		return userRepository.findAll();
 	}
 
+	public Page<User> findUsersWithFilters(UserFilter filter, Pageable pageable) {
+		Specification<User> spec = UserSpec.withFilters(
+			filter.getUsername(),
+			filter.getPhoneNumber(),
+			filter.getRole()
+		);
+		return userRepository.findAll(spec, pageable);
+	}
 
 }
