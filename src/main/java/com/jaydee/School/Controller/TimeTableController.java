@@ -22,7 +22,7 @@ import com.jaydee.School.service.TimeTableService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/timetables")
+@RequestMapping("/api/time_tables")
 public class TimeTableController {
 
 	@Autowired
