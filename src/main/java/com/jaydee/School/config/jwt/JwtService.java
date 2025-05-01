@@ -1,4 +1,4 @@
-//package com.jaydee.School.security;
+//package com.jaydee.School.config.jwt;
 //
 //import java.security.Key;
 //import java.util.Date;
@@ -19,10 +19,10 @@
 //@Service
 //public class JwtService {
 //
-//    @Value("${spring.security.jwt.secret}")
+//    @Value("${app.security.jwt.secret}")
 //    private String secretKey;
 //
-//    @Value("${spring.security.jwt.expiration}")
+//    @Value("${app.security.jwt.expiration}")
 //    private long jwtExpiration;
 //
 //    public String extractUsername(String token) {
@@ -76,5 +76,5 @@
 //        return Keys.hmacShaKeyFor(keyBytes);
 //    }
 //} 
-
-
+//
+//

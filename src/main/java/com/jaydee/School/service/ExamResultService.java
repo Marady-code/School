@@ -1,48 +1,22 @@
 package com.jaydee.School.service;
 
+import java.util.List;
+
 import com.jaydee.School.entity.ExamResult;
 import com.jaydee.School.entity.Student;
 import com.jaydee.School.entity.Teacher;
-import com.jaydee.School.repository.ExamResultRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+public interface ExamResultService {
 
-@Service
-public class ExamResultService {
-    
-    @Autowired
-    private ExamResultRepository examResultRepository;
+    ExamResult createExamResult(ExamResult examResult);
 
-    public ExamResult createExamResult(ExamResult examResult) {
-        return examResultRepository.save(examResult);
-    }
+    ExamResult updateExamResult(Long id, ExamResult examResult);
 
-    public ExamResult updateExamResult(Long id, ExamResult examResult) {
-        ExamResult existingResult = examResultRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Exam result not found"));
-        
-        existingResult.setScore(examResult.getScore());
-        existingResult.setRemarks(examResult.getRemarks());
-        existingResult.setExamDate(examResult.getExamDate());
-        
-        return examResultRepository.save(existingResult);
-    }
+    List<ExamResult> getStudentResults(Student student);
 
-    public List<ExamResult> getStudentResults(Student student) {
-        return examResultRepository.findByStudent(student);
-    }
+    List<ExamResult> getTeacherResults(Teacher teacher);
 
-    public List<ExamResult> getTeacherResults(Teacher teacher) {
-        return examResultRepository.findByTeacher(teacher);
-    }
+    List<ExamResult> getStudentSubjectResults(Student student, String subject);
 
-    public List<ExamResult> getStudentSubjectResults(Student student, String subject) {
-        return examResultRepository.findByStudentAndSubject(student, subject);
-    }
-
-    public void deleteExamResult(Long id) {
-        examResultRepository.deleteById(id);
-    }
+    void deleteExamResult(Long id);
 } 

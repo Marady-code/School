@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,13 +26,13 @@ public class PerformanceReportController {
     private PerformanceReportService performanceReportService;
 
     @PostMapping
-    @PreAuthorize("hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<PerformanceReport> createReport(@RequestBody PerformanceReport report) {
         return ResponseEntity.ok(performanceReportService.createReport(report));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<PerformanceReport> updateReport(
             @PathVariable Long id,
             @RequestBody PerformanceReport report) {
@@ -41,7 +40,7 @@ public class PerformanceReportController {
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    //@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<PerformanceReport>> getStudentReports(@PathVariable Long studentId) {
         Student student = new Student();
         student.setId(studentId);
@@ -49,7 +48,7 @@ public class PerformanceReportController {
     }
 
     @GetMapping("/teacher/{teacherId}")
-    @PreAuthorize("hasRole('ADMIN') or @securityService.isCurrentUser(#teacherId)")
+    //@PreAuthorize("hasRole('ADMIN') or @securityService.isCurrentUser(#teacherId)")
     public ResponseEntity<List<PerformanceReport>> getTeacherReports(@PathVariable Long teacherId) {
         Teacher teacher = new Teacher();
         teacher.setId(teacherId);
@@ -57,7 +56,7 @@ public class PerformanceReportController {
     }
 
     @GetMapping("/student/{studentId}/term/{academicTerm}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    //@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<PerformanceReport>> getStudentTermReports(
             @PathVariable Long studentId,
             @PathVariable String academicTerm) {
@@ -67,7 +66,7 @@ public class PerformanceReportController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    //@PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
         performanceReportService.deleteReport(id);
         return ResponseEntity.ok().build();

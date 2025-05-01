@@ -1,4 +1,4 @@
-//package com.jaydee.School.security;
+//package com.jaydee.School.config.security;
 //
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.authentication.AuthenticationProvider;
@@ -10,7 +10,6 @@
 //import org.springframework.stereotype.Component;
 //
 //import com.jaydee.School.DTO.UserDTO;
-//import com.jaydee.School.entity.User;
 //import com.jaydee.School.service.UserService;
 //
 //@Component
@@ -30,7 +29,7 @@
 //        UserDTO user = userService.getUserByUsername(username);
 //
 //        if (passwordEncoder.matches(password, user.getPassword())) {
-//            UserDetailsImpl userDetails = new UserDetailsImpl(user);
+//            UserPrincipal userDetails = new UserPrincipal(user);
 //            return new UsernamePasswordAuthenticationToken(
 //                userDetails, password, userDetails.getAuthorities());
 //        }
@@ -43,3 +42,5 @@
 //        return authentication.equals(UsernamePasswordAuthenticationToken.class);
 //    }
 //} 
+//
+//

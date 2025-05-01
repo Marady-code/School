@@ -1,5 +1,4 @@
-//package com.jaydee.School.security;
-//
+//package com.jaydee.School.config.jwt;
 //import java.security.Key;
 //import java.util.Date;
 //import java.util.stream.Collectors;
@@ -8,6 +7,8 @@
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.stereotype.Component;
+//
+//import com.jaydee.School.config.security.UserPrincipal;
 //
 //import io.jsonwebtoken.Claims;
 //import io.jsonwebtoken.ExpiredJwtException;
@@ -20,7 +21,7 @@
 //@Component
 //public class JwtTokenProvider {
 //
-//	@Value("${spring.security.jwt.secret}")
+//	@Value("${app.security.jwt.secret}")
 //    private String jwtSecret;
 //
 //    @Value("${app.jwt.expiration}")
@@ -43,7 +44,7 @@
 //                .collect(Collectors.joining(","));
 //
 //        return Jwts.builder()
-//                .setSubject(Long.toString(userPrincipal.getId()))
+////                .setSubject(Long.toString(userPrincipal.getId()))
 //                .claim("roles", roles)
 //                .claim("username", userPrincipal.getUsername())
 //                .setIssuedAt(new Date())
@@ -84,5 +85,5 @@
 //        }
 //    }
 //} 
-
-
+//
+//

@@ -21,21 +21,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+	private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDTO>> login(@Valid @RequestBody LoginDTO loginDTO) {
-        UserDTO userDTO = userService.login(loginDTO);
-        return ResponseEntity.ok(ApiResponse.success("Login successful", userDTO));
-    }
+	@PostMapping("/login")
+	public ResponseEntity<ApiResponse<UserDTO>> login(@Valid @RequestBody LoginDTO loginDTO) {
+		UserDTO userDTO = userService.login(loginDTO);
+		return ResponseEntity.ok(ApiResponse.success("Login successful", userDTO));
+	}
 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserDTO>> register(@Valid @RequestBody User user) {
-        if (userService.existsByUsername(user.getUsername())) {
-            return ResponseEntity
-                .badRequest()
-                .body(ApiResponse.error("Username is already taken"));
-        }
+	@PostMapping("/register")
+	public ResponseEntity<ApiResponse<UserDTO>> register(@Valid @RequestBody User user) {
+		if (userService.existsByUsername(user.getUsername())) {
+			return ResponseEntity.badRequest().body(ApiResponse.error("Username is already taken"));
+		}
 
 //        if (userService.existsByEmail(user.getEmail())) {
 //            return ResponseEntity
@@ -43,16 +41,15 @@ public class AuthController {
 //                .body(new MessageResponse("Email is already in use!"));
 //        }
 
-        User createdUser = userService.createUser(user);
-        UserDTO userDTO = userService.getUserByUsername(createdUser.getUsername());
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(ApiResponse.success("User registered successfully", userDTO));
-    }
+		User createdUser = userService.createUser(user);
+		UserDTO userDTO = userService.getUserByUsername(createdUser.getUsername());
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(ApiResponse.success("User registered successfully", userDTO));
+	}
 
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() {
-        // Implement logout logic here if using session-based authentication
-        return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
-    }
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<Void>> logout() {
+		// Implement logout logic here if using session-based authentication
+		return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
+	}
 }

@@ -13,7 +13,7 @@ public interface AttendanceService {
 	
 	List<AttendanceDTO> getAttendanceByStudentId(Long studentId);
 	
-	Attendance updateAttendance(Long studentId,Attendance attendance);
+	Attendance updateAttendance(Long studentId,Attendance attendanceUpdate);
 	
 	void deleteAttendanceByStudentId(Long studentId);
 //	

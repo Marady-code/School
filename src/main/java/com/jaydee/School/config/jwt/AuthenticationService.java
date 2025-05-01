@@ -1,16 +1,13 @@
-//package com.jaydee.School.service;
+//package com.jaydee.School.config.jwt;
 //
 //import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.stereotype.Service;
 //
-//import com.jaydee.School.DTO.AuthenticationRequest;
-//import com.jaydee.School.DTO.AuthenticationResponse;
 //import com.jaydee.School.DTO.RegisterRequest;
 //import com.jaydee.School.entity.User;
 //import com.jaydee.School.repository.UserRepository;
-//import com.jaydee.School.security.JwtService;
 //
 //import lombok.RequiredArgsConstructor;
 //
@@ -28,7 +25,7 @@
 //                .username(request.getUsername())
 //                .password(passwordEncoder.encode(request.getPassword()))
 //                .phoneNumber(request.getPhoneNumber())
-//                .role(request.getRole())
+//                //.role(request.getRole())
 //                .build();
 //        
 //        userRepository.save(user);
@@ -56,3 +53,8 @@
 //                .build();
 //    }
 //} 
+//
+//
+//
+//
+//

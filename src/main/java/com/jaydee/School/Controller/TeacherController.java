@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.jaydee.School.DTO.TeacherDTO;
 import com.jaydee.School.Exception.ResourceNotFound;
@@ -28,69 +27,60 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/teachers")
 public class TeacherController {
-	 
+
 	private final TeacherService teacherService;
 	private final TeacherMapper teacherMapper;
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody TeacherDTO teacherDTO){
+	public ResponseEntity<?> create(@RequestBody TeacherDTO teacherDTO) {
 		Teacher teacher = teacherMapper.toEntity(teacherDTO);
 		teacher = teacherService.create(teacher);
 		return ResponseEntity.ok(teacherMapper.toTeacherDTO(teacher));
 	}
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping("{id}")
-	public ResponseEntity<?> getByID(@PathVariable Long id){
+	public ResponseEntity<?> getByID(@PathVariable Long id) {
 		try {
 			Teacher teacher = teacherService.getById(id);
 			return ResponseEntity.ok(teacherMapper.toTeacherDTO(teacher));
-		}catch(ResourceNotFound e) {
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("Error", e.getMessage()));
 		}
 	}
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping
-	public ResponseEntity<?> getAllTeacher(){
-		List<TeacherDTO> list = teacherService.getAllTeachers()
-				.stream()
-				.map(teacher -> teacherMapper.toTeacherDTO(teacher))
-				.collect(Collectors.toList());
-		
+	public ResponseEntity<?> getAllTeacher() {
+		List<TeacherDTO> list = teacherService.getAllTeachers().stream()
+				.map(teacher -> teacherMapper.toTeacherDTO(teacher)).collect(Collectors.toList());
+
 		return ResponseEntity.ok(list);
 	}
-	
-	@PreAuthorize("hasRole('ADMIN')")
+
+	// @PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteById(@PathVariable Long id){
+	public ResponseEntity<?> deleteById(@PathVariable Long id) {
 		try {
 			teacherService.deleteTeacherById(id);
-			return ResponseEntity.ok(Collections.singletonMap("message", "Teacher with id = " + id + " deleted succesfully"));
-		}catch(ResourceNotFound e) {
+			return ResponseEntity
+					.ok(Collections.singletonMap("message", "Teacher with id = " + id + " deleted succesfully"));
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("Error", e.getMessage()));
 		}
 	}
-	
-	@PreAuthorize("hasRole('ADMIN')")
+
+	// @PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("{id}")
-	public ResponseEntity<?> Update(@PathVariable Long id, @RequestBody TeacherDTO teacherDTO){
+	public ResponseEntity<?> Update(@PathVariable Long id, @RequestBody TeacherDTO teacherDTO) {
 		try {
 			Teacher teacher = teacherMapper.toEntity(teacherDTO);
 			Teacher updateTeacher = teacherService.updateTeacher(id, teacher);
 			return ResponseEntity.ok(teacherMapper.toTeacherDTO(updateTeacher));
-		}catch(ResourceNotFound e){
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("Error", e.getMessage()));
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

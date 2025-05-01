@@ -1,4 +1,4 @@
-//package com.jaydee.School.security;
+//package com.jaydee.School.config.jwt;
 //
 //import java.io.IOException;
 //
@@ -8,6 +8,8 @@
 //import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 //import org.springframework.stereotype.Component;
 //import org.springframework.web.filter.OncePerRequestFilter;
+//
+//import com.jaydee.School.config.security.UserDetailsServiceImpl;
 //
 //import jakarta.servlet.FilterChain;
 //import jakarta.servlet.ServletException;
@@ -56,4 +58,4 @@
 //        filterChain.doFilter(request, response);
 //    }
 //} 
-
+//

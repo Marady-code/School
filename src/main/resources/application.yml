@@ -1,24 +1,24 @@
 server:
-#  port: 8080
-#  servlet:
-#    context-path: /api
-#  tomcat:
-#    max-threads: 200
-#    min-spare-threads: 20
-#    max-connections: 10000
-#    connection-timeout: 5000
+  port: 8080
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    connection-timeout: 5000
 
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/School
     username: School
     password: 150304
-#    hikari:
-#      maximum-pool-size: 10
-#      minimum-idle: 5
-#      idle-timeout: 300000
-#      connection-timeout: 20000
-#      max-lifetime: 1200000
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
   jpa:
     hibernate:
       ddl-auto: update
@@ -35,7 +35,7 @@ spring:
 #        generate_statistics: true
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
+      matching-strategy: ant-path-matcher
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: false

@@ -58,7 +58,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 	}
 
 	@Override
-	@Transactional
 	public Attendance updateAttendance(Long studentId, Attendance attendanceUpdate) {
 		if (!studentRepository.existsById(studentId)) {
 			throw new ResourceNotFound("Student", studentId);

@@ -1,5 +1,4 @@
 //package com.jaydee.School.Controller;
-//
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.PostMapping;
 //import org.springframework.web.bind.annotation.RequestBody;
@@ -9,7 +8,7 @@
 //import com.jaydee.School.DTO.AuthenticationRequest;
 //import com.jaydee.School.DTO.AuthenticationResponse;
 //import com.jaydee.School.DTO.RegisterRequest;
-//import com.jaydee.School.service.AuthenticationService;
+//import com.jaydee.School.security.AuthenticationService;
 //
 //import io.swagger.v3.oas.annotations.Operation;
 //import io.swagger.v3.oas.annotations.tags.Tag;

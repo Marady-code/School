@@ -1,5 +1,13 @@
 package com.jaydee.School.service.impl;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.jaydee.School.DTO.TimeTableDTO;
 import com.jaydee.School.entity.ClassEntity;
 import com.jaydee.School.entity.Teacher;
@@ -7,23 +15,15 @@ import com.jaydee.School.entity.TimeTable;
 import com.jaydee.School.mapper.TimeTableMapper;
 import com.jaydee.School.repository.TimeTableRepository;
 import com.jaydee.School.service.TimeTableService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class TimeTableServiceImpl implements TimeTableService {
     
-    @Autowired
-    private TimeTableRepository timeTableRepository;
-
-    @Autowired
-    private TimeTableMapper timeTableMapper;
+    private final TimeTableRepository timeTableRepository;
+    private final TimeTableMapper timeTableMapper;
 
     @Override
     @Transactional

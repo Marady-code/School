@@ -19,3 +19,9 @@ select * from attendances
 
 select * from classes
 
+select * from user_roles
+
+select * from roles
+
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;

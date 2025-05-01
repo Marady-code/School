@@ -21,74 +21,75 @@ import com.jaydee.School.mapper.AttendanceMapper;
 import com.jaydee.School.service.AttendanceService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/attendances")
 public class AttendanceController {
-	
+
 	private final AttendanceService attendanceService;
 	private final AttendanceMapper attendanceMapper;
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
+	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
+	// hasRole('ADMIN') or hasRole('TEACHER')")
 	@GetMapping
-	public ResponseEntity<?> getAllAttendances(){
+	public ResponseEntity<?> getAllAttendances() {
 		List<AttendanceDTO> attendances = attendanceService.getAllAttendances();
-		return ResponseEntity.ok(attendances);	
+		return ResponseEntity.ok(attendances);
 	}
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
+	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
+	// hasRole('ADMIN') or hasRole('TEACHER')")
 	@PostMapping
-	public ResponseEntity<AttendanceDTO> markAttendace(@RequestBody AttendanceDTO attendanceDTO){
+	public ResponseEntity<AttendanceDTO> markAttendace(@RequestBody AttendanceDTO attendanceDTO) {
 		AttendanceDTO savedAttendance = attendanceService.markAttendance(attendanceDTO);
 		return new ResponseEntity<>(savedAttendance, HttpStatus.CREATED);
 	}
-	
-	
-	@PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT')")
+
+	// @PreAuthorize("hasAuthority('attendance:read') or hasRole('ADMIN') or
+	// hasRole('TEACHER') or hasRole('STUDENT')")
 	@GetMapping("/students/{studentId}")
-	public ResponseEntity<List<AttendanceDTO>> getAttendanceByStudent(@PathVariable Long studentId){
+	public ResponseEntity<List<AttendanceDTO>> getAttendanceByStudentId(@PathVariable Long studentId) {
 		try {
 			List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentId(studentId);
 			return ResponseEntity.ok(attendances);
-		}catch(ResourceNotFound e){
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-		
+
 	}
-	
+
 //	@GetMapping("/teachers/{teacherId}")
 //	public ResponseEntity<List<AttendanceDTO>>  getAttendanceByTeacher(@PathVariable Long teacherId){
 //		List<AttendanceDTO> attendances = attendanceService.getAttendanceByTeacherId(teacherId);
 //		return ResponseEntity.ok(attendances);
 //	}
-	
-	@PreAuthorize("hasRole('ADMIN')")
+
+	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
+	// hasRole('ADMIN') or hasRole('TEACHER')")
 	@PutMapping("{studentId}")
-	public ResponseEntity<?> UpdateAttendance(@PathVariable Long studentId, @RequestBody AttendanceDTO attendanceDTO){
+	public ResponseEntity<?> UpdateAttendance(@PathVariable Long studentId, @RequestBody AttendanceDTO attendanceDTO) {
 		try {
 			Attendance attendance = attendanceMapper.toEntity(attendanceDTO);
 			Attendance updateAttendance = attendanceService.updateAttendance(studentId, attendance);
 			return ResponseEntity.ok(attendanceMapper.toDTO(updateAttendance));
-		}catch(ResourceNotFound e) {
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-		
+
 	}
-	
-	@PreAuthorize("hasRole('ADMIN')")
+
 	@DeleteMapping("{studentId}")
-	public ResponseEntity<?> DeleteAttendanceByStudentId(@PathVariable Long id){
+	public ResponseEntity<?> DeleteAttendanceByStudentId(@PathVariable Long id) {
 		try {
 			attendanceService.deleteAttendanceByStudentId(id);
-			return ResponseEntity.ok(Collections.singletonMap("message", "Student with id = " + id + "deleted successfullt."));
-		}catch(ResourceNotFound e){
+			return ResponseEntity
+					.ok(Collections.singletonMap("message", "Student with id = " + id + "deleted successfullt."));
+		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage()));
 		}
 	}
-	
-	
+
 //	public ResponseEntity<?> getById(@PathVariable("id") Long studentId){
 //		try {
 //			List<Attendance> attendance = attendanceService.getAttendanceByStudentId(studentId);
