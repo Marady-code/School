@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,35 +21,25 @@ import com.jaydee.School.entity.Attendance;
 import com.jaydee.School.mapper.AttendanceMapper;
 import com.jaydee.School.service.AttendanceService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/attendances")
+@RequestMapping("/attendance")
+@RequiredArgsConstructor
 public class AttendanceController {
 
-	private final AttendanceService attendanceService;
-	private final AttendanceMapper attendanceMapper;
+    private final AttendanceService attendanceService;
+    private final AttendanceMapper attendanceMapper;
 
-	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
-	// hasRole('ADMIN') or hasRole('TEACHER')")
-	@GetMapping
-	public ResponseEntity<?> getAllAttendances() {
-		List<AttendanceDTO> attendances = attendanceService.getAllAttendances();
-		return ResponseEntity.ok(attendances);
-	}
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<AttendanceDTO> markAttendance(@Valid @RequestBody AttendanceDTO attendanceDTO) {
+        return ResponseEntity.ok(attendanceService.markAttendance(attendanceDTO));
+    }
 
-	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
-	// hasRole('ADMIN') or hasRole('TEACHER')")
-	@PostMapping
-	public ResponseEntity<AttendanceDTO> markAttendace(@RequestBody AttendanceDTO attendanceDTO) {
-		AttendanceDTO savedAttendance = attendanceService.markAttendance(attendanceDTO);
-		return new ResponseEntity<>(savedAttendance, HttpStatus.CREATED);
-	}
-
-	// @PreAuthorize("hasAuthority('attendance:read') or hasRole('ADMIN') or
-	// hasRole('TEACHER') or hasRole('STUDENT')")
-	@GetMapping("/students/{studentId}")
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
 	public ResponseEntity<List<AttendanceDTO>> getAttendanceByStudentId(@PathVariable Long studentId) {
 		try {
 			List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentId(studentId);
@@ -59,15 +50,8 @@ public class AttendanceController {
 
 	}
 
-//	@GetMapping("/teachers/{teacherId}")
-//	public ResponseEntity<List<AttendanceDTO>>  getAttendanceByTeacher(@PathVariable Long teacherId){
-//		List<AttendanceDTO> attendances = attendanceService.getAttendanceByTeacherId(teacherId);
-//		return ResponseEntity.ok(attendances);
-//	}
-
-	// @PreAuthorize("hasAuthority('attendance:read','attendance:write') or
-	// hasRole('ADMIN') or hasRole('TEACHER')")
-	@PutMapping("{studentId}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
 	public ResponseEntity<?> UpdateAttendance(@PathVariable Long studentId, @RequestBody AttendanceDTO attendanceDTO) {
 		try {
 			Attendance attendance = attendanceMapper.toEntity(attendanceDTO);
@@ -78,8 +62,9 @@ public class AttendanceController {
 		}
 
 	}
-
-	@DeleteMapping("{studentId}")
+    
+    @DeleteMapping("{studentId}")
+    @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> DeleteAttendanceByStudentId(@PathVariable Long id) {
 		try {
 			attendanceService.deleteAttendanceByStudentId(id);
@@ -90,13 +75,13 @@ public class AttendanceController {
 		}
 	}
 
-//	public ResponseEntity<?> getById(@PathVariable("id") Long studentId){
-//		try {
-//			List<Attendance> attendance = attendanceService.getAttendanceByStudentId(studentId);
-//			return ResponseEntity.ok(attendanceMapper.toDTO(attendance));
-//		}catch(ResourceNotFound e) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage() ));
-//		}
-//		
-//	}
+    
+    
+
+//    @DeleteMapping("/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<Void> deleteAttendance(@PathVariable Long id) {
+//        attendanceService.deleteAttendance(id);
+//        return ResponseEntity.ok().build();
+//    }
 }

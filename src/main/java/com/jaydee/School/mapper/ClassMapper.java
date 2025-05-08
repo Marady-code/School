@@ -37,6 +37,14 @@ public interface ClassMapper {
     @Mapping(target = "capacity", source = "capacity")
     @Mapping(target = "roomNumber", source = "roomNumber")
     @Mapping(target = "description", source = "description")
+    @Mapping(target = "schedule", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "startDate", ignore = true)
+    @Mapping(target = "endDate", ignore = true)
+    @Mapping(target = "subjects", ignore = true)
+    @Mapping(target = "timeTables", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     ClassEntity toEntity(ClassDTO dto);
 
     @Named("mapStudentIds")

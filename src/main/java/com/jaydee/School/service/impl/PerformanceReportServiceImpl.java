@@ -15,39 +15,39 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PerformanceReportServiceImpl implements PerformanceReportService {
-    
-    private final PerformanceReportRepository performanceReportRepository;
 
-    public PerformanceReport createReport(PerformanceReport report) {
-        return performanceReportRepository.save(report);
-    }
+	private final PerformanceReportRepository performanceReportRepository;
 
-    public PerformanceReport updateReport(Long id, PerformanceReport report) {
-        PerformanceReport existingReport = performanceReportRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Performance report not found"));
-        
-        existingReport.setAverageScore(report.getAverageScore());
-        existingReport.setOverallGrade(report.getOverallGrade());
-        existingReport.setTeacherComments(report.getTeacherComments());
-        existingReport.setStrengths(report.getStrengths());
-        existingReport.setAreasForImprovement(report.getAreasForImprovement());
-        
-        return performanceReportRepository.save(existingReport);
-    }
+	public PerformanceReport createReport(PerformanceReport report) {
+		return performanceReportRepository.save(report);
+	}
 
-    public List<PerformanceReport> getStudentReports(Student student) {
-        return performanceReportRepository.findByStudent(student);
-    }
+	public PerformanceReport updateReport(Long id, PerformanceReport report) {
+		PerformanceReport existingReport = performanceReportRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Performance report not found"));
 
-    public List<PerformanceReport> getTeacherReports(Teacher teacher) {
-        return performanceReportRepository.findByTeacher(teacher);
-    }
+		existingReport.setAverageScore(report.getAverageScore());
+		existingReport.setOverallGrade(report.getOverallGrade());
+		existingReport.setTeacherComments(report.getTeacherComments());
+		existingReport.setStrengths(report.getStrengths());
+		existingReport.setAreasForImprovement(report.getAreasForImprovement());
 
-    public List<PerformanceReport> getStudentTermReports(Student student, String academicTerm) {
-        return performanceReportRepository.findByStudentAndAcademicTerm(student, academicTerm);
-    }
+		return performanceReportRepository.save(existingReport);
+	}
 
-    public void deleteReport(Long id) {
-        performanceReportRepository.deleteById(id);
-    }
-} 
+	public List<PerformanceReport> getStudentReports(Student student) {
+		return performanceReportRepository.findByStudent(student);
+	}
+
+	public List<PerformanceReport> getTeacherReports(Teacher teacher) {
+		return performanceReportRepository.findByTeacher(teacher);
+	}
+
+	public List<PerformanceReport> getStudentTermReports(Student student, String academicTerm) {
+		return performanceReportRepository.findByStudentAndAcademicTerm(student, academicTerm);
+	}
+
+	public void deleteReport(Long id) {
+		performanceReportRepository.deleteById(id);
+	}
+}

@@ -15,11 +15,7 @@ public class StudentDTO {
 	private String gender;
 	
 	private LocalDate dob;
+	
+	private String classId;
     
-    private Long userId;
-
-    private Long teacherId;
-
-    private Long classId;
-
 }

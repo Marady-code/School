@@ -1,16 +1,20 @@
 package com.jaydee.School.service;
 
+import com.jaydee.School.DTO.StudentDTO;
 import com.jaydee.School.entity.Student;
 
 import java.util.List;
 
 public interface StudentService {
 
-	Student create(Student student);
-	Student getById(Long id);
-	List<Student> getAllStudent();
-	void deleteById(Long id);
-	Student updateStudent(Long id, Student studentUpdate);
+	StudentDTO createStudent(Student student);
+	StudentDTO getStudentById(Long id);
+	List<StudentDTO> getAllStudents();
+	void deleteStudent(Long id);
+	StudentDTO updateStudent(Long id, Student student);
+	List<StudentDTO> getStudentsByClass(String className);
+	StudentDTO activateStudent(Long id);
+	StudentDTO deactivateStudent(Long id);
 
 
 

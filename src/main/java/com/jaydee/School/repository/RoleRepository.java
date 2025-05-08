@@ -9,5 +9,6 @@ import com.jaydee.School.entity.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Optional<Role> findByName(String name);
+    Optional<Role> findByName(Role.RoleName name);
+    boolean existsByName(Role.RoleName name);
 }

@@ -14,38 +14,38 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ExamResultServiceImpl implements ExamResultService{
-    
-    private final ExamResultRepository examResultRepository;
+public class ExamResultServiceImpl implements ExamResultService {
 
-    public ExamResult createExamResult(ExamResult examResult) {
-        return examResultRepository.save(examResult);
-    }
+	private final ExamResultRepository examResultRepository;
 
-    public ExamResult updateExamResult(Long id, ExamResult examResult) {
-        ExamResult existingResult = examResultRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Exam result not found"));
-        
-        existingResult.setScore(examResult.getScore());
-        existingResult.setRemarks(examResult.getRemarks());
-        existingResult.setExamDate(examResult.getExamDate());
-        
-        return examResultRepository.save(existingResult);
-    }
+	public ExamResult createExamResult(ExamResult examResult) {
+		return examResultRepository.save(examResult);
+	}
 
-    public List<ExamResult> getStudentResults(Student student) {
-        return examResultRepository.findByStudent(student);
-    }
+	public ExamResult updateExamResult(Long id, ExamResult examResult) {
+		ExamResult existingResult = examResultRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Exam result not found"));
 
-    public List<ExamResult> getTeacherResults(Teacher teacher) {
-        return examResultRepository.findByTeacher(teacher);
-    }
+		existingResult.setScore(examResult.getScore());
+		existingResult.setRemarks(examResult.getRemarks());
+		existingResult.setExamDate(examResult.getExamDate());
 
-    public List<ExamResult> getStudentSubjectResults(Student student, String subject) {
-        return examResultRepository.findByStudentAndSubject(student, subject);
-    }
+		return examResultRepository.save(existingResult);
+	}
 
-    public void deleteExamResult(Long id) {
-        examResultRepository.deleteById(id);
-    }
-} 
+	public List<ExamResult> getStudentResults(Student student) {
+		return examResultRepository.findByStudent(student);
+	}
+
+	public List<ExamResult> getTeacherResults(Teacher teacher) {
+		return examResultRepository.findByTeacher(teacher);
+	}
+
+	public List<ExamResult> getStudentSubjectResults(Student student, String subject) {
+		return examResultRepository.findByStudentAndSubject(student, subject);
+	}
+
+	public void deleteExamResult(Long id) {
+		examResultRepository.deleteById(id);
+	}
+}

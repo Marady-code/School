@@ -28,7 +28,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Transactional
 	public AttendanceDTO markAttendance(AttendanceDTO attendanceDTO) {
 		validateAttendanceDTO(attendanceDTO);
-		
+
 		Attendance attendance = attendanceMapper.toEntity(attendanceDTO);
 		Student student = studentRepository.findById(attendanceDTO.getStudentId())
 				.orElseThrow(() -> new ResourceNotFound("Student", attendanceDTO.getStudentId()));
@@ -49,10 +49,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 		if (!studentRepository.existsById(studentId)) {
 			throw new ResourceNotFound("Student", studentId);
 		}
-		
+
 		List<Attendance> attendances = attendaceRepository.findByStudentId(studentId);
 		if (attendances.isEmpty()) {
-			throw new ResourceNotFound("No attendance records found for student");
+			throw new ResourceNotFound("No attendance records found for student", studentId);
 		}
 		return attendanceMapper.toDTOList(attendances);
 	}
@@ -63,17 +63,15 @@ public class AttendanceServiceImpl implements AttendanceService {
 			throw new ResourceNotFound("Student", studentId);
 		}
 
-		return attendaceRepository.findById(studentId)
-				.map(existingAttendance -> {
-					if (attendanceUpdate.getStatus() != null) {
-						existingAttendance.setStatus(attendanceUpdate.getStatus());
-					}
-					if (attendanceUpdate.getDate() != null) {
-						existingAttendance.setDate(attendanceUpdate.getDate());
-					}
-					return attendaceRepository.save(existingAttendance);
-				})
-				.orElseThrow(() -> new ResourceNotFound("Attendance", studentId));
+		return attendaceRepository.findById(studentId).map(existingAttendance -> {
+			if (attendanceUpdate.getStatus() != null) {
+				existingAttendance.setStatus(attendanceUpdate.getStatus());
+			}
+			if (attendanceUpdate.getDate() != null) {
+				existingAttendance.setDate(attendanceUpdate.getDate());
+			}
+			return attendaceRepository.save(existingAttendance);
+		}).orElseThrow(() -> new ResourceNotFound("Attendance", studentId));
 	}
 
 	@Override

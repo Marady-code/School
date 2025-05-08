@@ -28,35 +28,30 @@ public class ClassServiceImpl implements ClassService {
 	private final TeacherRepository teacherRepository;
 	private final StudentRepository studentRepository;
 	private final ClassMapper classMapper;
-	
+
 	@Override
 	@Transactional
 	public ClassEntity create(ClassEntity classEntity) {
 		validateClassEntity(classEntity);
 		return classRepository.save(classEntity);
 	}
-	
+
 	@Override
 	public List<ClassDTO> getAllClasses() {
-		return classRepository.findAll()
-				.stream()
-				.map(classMapper::toDTO)
-				.collect(Collectors.toList());
-				
+		return classRepository.findAll().stream().map(classMapper::toDTO).collect(Collectors.toList());
+
 	}
+
 	@Override
 	public ClassDTO getClassById(Long id) {
-		ClassEntity classEntity = classRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound("Class", id));
+		ClassEntity classEntity = classRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Class", id));
 		return classMapper.toDTO(classEntity);
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public ClassEntity updateClass(Long id, ClassDTO classDTO) {
-		ClassEntity existingClass = classRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound("Class", id));
+		ClassEntity existingClass = classRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Class", id));
 
 		// Update basic class information
 		if (classDTO.getClassName() != null && !classDTO.getClassName().isBlank()) {
@@ -105,18 +100,18 @@ public class ClassServiceImpl implements ClassService {
 			throw new ResourceNotFound("Class", id);
 		}
 		classRepository.deleteById(id);
-		
+
 	}
-	
+
 	@Override
 	@Transactional
 	public ClassEntity assignTeacherToClass(Long classId, Long teacherId) {
 		ClassEntity classEntity = classRepository.findById(classId)
 				.orElseThrow(() -> new ResourceNotFound("Class", classId));
-		
+
 		Teacher teacher = teacherRepository.findById(teacherId)
 				.orElseThrow(() -> new ResourceNotFound("Teacher", teacherId));
-		
+
 		classEntity.setTeacher(teacher);
 		return classRepository.save(classEntity);
 	}
@@ -126,21 +121,21 @@ public class ClassServiceImpl implements ClassService {
 	public ClassEntity addStudentToClass(Long classId, Long studentId) {
 		ClassEntity classEntity = classRepository.findById(classId)
 				.orElseThrow(() -> new ResourceNotFound("Class", classId));
-		
+
 		Student student = studentRepository.findById(studentId)
 				.orElseThrow(() -> new ResourceNotFound("Student", studentId));
-		
+
 		if (classEntity.getStudents() == null) {
 			classEntity.setStudents(new ArrayList<>());
 		}
-		
+
 		if (!classEntity.getStudents().contains(student)) {
 			validateClassCapacity(classEntity, classEntity.getStudents().size() + 1);
 			classEntity.getStudents().add(student);
 			student.setClassEntity(classEntity);
 			studentRepository.save(student);
 		}
-		
+
 		return classRepository.save(classEntity);
 	}
 
@@ -149,16 +144,16 @@ public class ClassServiceImpl implements ClassService {
 	public ClassEntity removeStudentFromClass(Long classId, Long studentId) {
 		ClassEntity classEntity = classRepository.findById(classId)
 				.orElseThrow(() -> new ResourceNotFound("Class", classId));
-		
+
 		Student student = studentRepository.findById(studentId)
 				.orElseThrow(() -> new ResourceNotFound("Student", studentId));
-		
+
 		if (classEntity.getStudents() != null && classEntity.getStudents().contains(student)) {
 			classEntity.getStudents().remove(student);
 			student.setClassEntity(null);
 			studentRepository.save(student);
 		}
-		
+
 		return classRepository.save(classEntity);
 	}
 
@@ -179,7 +174,8 @@ public class ClassServiceImpl implements ClassService {
 
 	private void validateClassCapacity(ClassEntity classEntity, int newStudentCount) {
 		if (classEntity.getCapacity() != null && newStudentCount > classEntity.getCapacity()) {
-			throw new IllegalArgumentException("Class capacity exceeded. Maximum capacity is: " + classEntity.getCapacity());
+			throw new IllegalArgumentException(
+					"Class capacity exceeded. Maximum capacity is: " + classEntity.getCapacity());
 		}
 	}
 

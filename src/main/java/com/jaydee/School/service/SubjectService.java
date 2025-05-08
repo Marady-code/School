@@ -3,7 +3,6 @@ package com.jaydee.School.service;
 import java.util.List;
 
 import com.jaydee.School.DTO.SubjectDTO;
-import com.jaydee.School.Exception.ResourceNotFoundException;
 
 public interface SubjectService {
     /**
@@ -49,4 +48,6 @@ public interface SubjectService {
     List<SubjectDTO> getAllSubjects();
 
     boolean existsByCode(String code);
-} 
+
+    List<SubjectDTO> getSubjectsByTeacher(Long teacherId);
+}

@@ -1,60 +1,100 @@
-//package com.jaydee.School.Exception;
-//
-//import java.nio.file.AccessDeniedException;
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.authentication.BadCredentialsException;
-//import org.springframework.validation.FieldError;
-//import org.springframework.web.bind.MethodArgumentNotValidException;
-//import org.springframework.web.bind.annotation.ExceptionHandler;
-//import org.springframework.web.bind.annotation.RestControllerAdvice;
-//
-//import com.jaydee.School.DTO.ApiResponse;
-//
-//@RestControllerAdvice
-//public class GlobalExceptionHandler {
-//
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getAllErrors().forEach((error) -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
-//        return ResponseEntity
-//            .badRequest()
-//            .body(ApiResponse.error("Validation failed", errors));
-//    }
-//
-//    //@ExceptionHandler(BadCredentialsException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
-//        return ResponseEntity
-//            .status(HttpStatus.UNAUTHORIZED)
-//            .body(ApiResponse.error("Invalid username or password"));
-//    }
-//
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
-//        return ResponseEntity
-//            .status(HttpStatus.FORBIDDEN)
-//            .body(ApiResponse.error("Access denied"));
-//    }
-//
-//    @ExceptionHandler(ResourceNotFoundException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(ResourceNotFoundException ex) {
-//        return ResponseEntity
-//            .status(HttpStatus.NOT_FOUND)
-//            .body(ApiResponse.error(ex.getMessage()));
-//    }
-//
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ApiResponse<Void>> handleGlobalException(Exception ex) {
-//        return ResponseEntity
-//            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//            .body(ApiResponse.error("An unexpected error occurred"));
-//    }
-//}
+package com.jaydee.School.Exception;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import jakarta.validation.ConstraintViolationException;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFound.class)
+    protected ResponseEntity<Object> handleResourceNotFound(
+            ResourceNotFound ex, WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<Object> handleBadRequest(
+            BadRequestException ex, WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        if (ex.getDetails() != null) {
+            apiError.setDebugMessage(ex.getDetails());
+        }
+        return buildResponseEntity(apiError);
+    }
+
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage("Validation error");
+        List<ApiSubError> subErrors = new ArrayList<>();
+        
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            if (error instanceof FieldError) {
+                FieldError fieldError = (FieldError) error;
+                subErrors.add(new ApiValidationError(
+                    fieldError.getObjectName(),
+                    fieldError.getField(),
+                    fieldError.getRejectedValue(),
+                    fieldError.getDefaultMessage()));
+            } else {
+                subErrors.add(new ApiValidationError(
+                    error.getObjectName(),
+                    error.getDefaultMessage()));
+            }
+        });
+        
+        apiError.setSubErrors(subErrors);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolation(
+            ConstraintViolationException ex) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage("Validation error");
+        List<ApiSubError> subErrors = new ArrayList<>();
+        
+        ex.getConstraintViolations().forEach(violation -> {
+            subErrors.add(new ApiValidationError(
+                violation.getRootBeanClass().getName(),
+                violation.getPropertyPath().toString(),
+                violation.getInvalidValue(),
+                violation.getMessage()));
+        });
+        
+        apiError.setSubErrors(subErrors);
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleAllOtherExceptions(
+            Exception ex, WebRequest request) {
+        ApiError apiError = new ApiError(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "An unexpected error occurred",
+            ex);
+        return buildResponseEntity(apiError);
+    }
+
+    private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+}

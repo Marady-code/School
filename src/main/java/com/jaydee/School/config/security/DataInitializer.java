@@ -1,160 +1,221 @@
-//package com.jaydee.School.config.security;
-//
-//import java.util.Arrays;
-//import java.util.HashSet;
-//import java.util.List;
-//import java.util.Set;
-//
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Component;
-//
-//import com.jaydee.School.entity.Permission;
-//import com.jaydee.School.entity.Role;
-//import com.jaydee.School.entity.User;
-//import com.jaydee.School.repository.PermissionRepository;
-//import com.jaydee.School.repository.RoleRepository;
-//import com.jaydee.School.repository.UserRepository;
-//
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//
-//@Component
-//@RequiredArgsConstructor
-//@Slf4j
-//public class DataInitializer implements CommandLineRunner {
-//
-//    private final PermissionRepository permissionRepository;
-//    private final RoleRepository roleRepository;
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
-//
-//    @Override
-//    public void run(String... args) {
-//        // Only initialize if no permissions exist
-//        if (permissionRepository.count() == 0) {
-//            initializePermissions();
+package com.jaydee.School.config.security;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import com.jaydee.School.entity.Permission;
+import com.jaydee.School.entity.Role;
+import com.jaydee.School.entity.User;
+import com.jaydee.School.repository.PermissionRepository;
+import com.jaydee.School.repository.RoleRepository;
+import com.jaydee.School.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class DataInitializer implements CommandLineRunner {
+
+    private final PermissionRepository permissionRepository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Transactional
+    @Override
+    public void run(String... args) {
+        // Only initialize if no permissions exist
+        if (permissionRepository.count() == 0) {
+            initializePermissions();
+        }
+        
+        // Only initialize if no roles exist
+        if (roleRepository.count() == 0) {
+            initializeRoles();
+        }
+        
+        // Create default users if they don't exist
+        if (userRepository.findByEmail("admin@school.com").isEmpty()) {
+            createAdminUser();
+        }
+        
+//        // Create example teacher and student users for testing
+//        if (userRepository.findByUsername("teacher").isEmpty()) {
+//            createTestTeacher();
 //        }
 //        
-//        // Only initialize if no roles exist
-//        if (roleRepository.count() == 0) {
-//            initializeRoles();
+//        if (userRepository.findByUsername("student").isEmpty()) {
+//            createTestStudent();
 //        }
-//        
-//        // Create admin user if it doesn't exist
-//        if (userRepository.findByUsername("admin").isEmpty()) {
-//            createAdminUser();
-//        }
-//    }
-//    
-//    private void initializePermissions() {
-//        log.info("Initializing permissions...");
-//        
-//        List<Permission> permissions = Arrays.asList(
-//            createPermission("student:read"),
-//            createPermission("student:write"),
-//            createPermission("teacher:read"),
-//            createPermission("teacher:write"),
-//            createPermission("parent:read"),
-//            createPermission("parent:write"),
-//            createPermission("class:read"),
-//            createPermission("class:write"),
-//            createPermission("subject:read"),
-//            createPermission("subject:write"),
-//            createPermission("attendance:read"),
-//            createPermission("attendance:write"),
-//            createPermission("exam_result:read"),
-//            createPermission("exam_result:write"),
-//            createPermission("report:read"),
-//            createPermission("report:write"),
-//            createPermission("timetable:read"),
-//            createPermission("timetable:write"),
-//            createPermission("user:read"),
-//            createPermission("user:write")
-//        );
-//        
-//        permissionRepository.saveAll(permissions);
-//        log.info("Permissions initialized successfully");
-//    }
-//    
-//    private Permission createPermission(String name) {
-//        return Permission.builder()
-//                .name(name)
-//                .build();
-//    }
-//    
-//    private void initializeRoles() {
-//        log.info("Initializing roles...");
-//        
-//        // Admin role with all permissions
-//        Role adminRole = Role.builder()
-//                .name("ADMIN")
-//                .permissions(new HashSet<>(permissionRepository.findAll()))
-//                .build();
-//        
-//        // Teacher role with specific permissions
-//        Set<Permission> teacherPermissions = new HashSet<>(permissionRepository.findAllByNameIn(Arrays.asList(
-//            "student:read",
-//            "class:read",
-//            "subject:read",
-//            "attendance:read", "attendance:write",
-//            "exam_result:read", "exam_result:write",
-//            "report:read",
-//            "timetable:read"
-//        )));
-//        
-//        Role teacherRole = Role.builder()
-//                .name("TEACHER")
-//                .permissions(teacherPermissions)
-//                .build();
-//        
-//        // Student role with specific permissions
-//        Set<Permission> studentPermissions = new HashSet<>(permissionRepository.findAllByNameIn(Arrays.asList(
-//            "class:read",
-//            "subject:read",
-//            "attendance:read",
-//            "exam_result:read",
-//            "report:read",
-//            "timetable:read"
-//        )));
-//        
-//        Role studentRole = Role.builder()
-//                .name("STUDENT")
-//                .permissions(studentPermissions)
-//                .build();
-//        
-//        // Parent role with specific permissions
-//        Set<Permission> parentPermissions = new HashSet<>(permissionRepository.findAllByNameIn(Arrays.asList(
-//            "student:read",
-//            "attendance:read",
-//            "exam_result:read",
-//            "report:read",
-//            "timetable:read"
-//        )));
-//        
-//        Role parentRole = Role.builder()
-//                .name("PARENT")
-//                .permissions(parentPermissions)
-//                .build();
-//        
-//        roleRepository.saveAll(Arrays.asList(adminRole, teacherRole, studentRole, parentRole));
-//        log.info("Roles initialized successfully");
-//    }
-//    
-//    private void createAdminUser() {
-//        log.info("Creating admin user...");
-//        
-//        Role adminRole = roleRepository.findByName("ADMIN")
-//            .orElseThrow(() -> new RuntimeException("Admin role not found"));
-//        
-//        User adminUser = User.builder()
-//            .username("admin")
-//            .password(passwordEncoder.encode("admin123"))
-//            .roles(Set.of(adminRole))
-//            .phoneNumber("1234567890")
+    }
+    
+    @Transactional
+    private void initializePermissions() {
+        log.info("Initializing permissions...");
+        
+        List<Permission> permissions = Arrays.asList(
+            createPermission(Permission.PermissionName.CREATE_USER),
+            createPermission(Permission.PermissionName.READ_USER),
+            createPermission(Permission.PermissionName.UPDATE_USER),
+            createPermission(Permission.PermissionName.DELETE_USER),
+            createPermission(Permission.PermissionName.CREATE_ADMIN),
+            createPermission(Permission.PermissionName.READ_ADMIN),
+            createPermission(Permission.PermissionName.UPDATE_ADMIN),
+            createPermission(Permission.PermissionName.DELETE_ADMIN),
+            createPermission(Permission.PermissionName.CREATE_TEACHER),
+            createPermission(Permission.PermissionName.READ_TEACHER),
+            createPermission(Permission.PermissionName.UPDATE_TEACHER),
+            createPermission(Permission.PermissionName.DELETE_TEACHER),
+            createPermission(Permission.PermissionName.CREATE_STUDENT),
+            createPermission(Permission.PermissionName.READ_STUDENT),
+            createPermission(Permission.PermissionName.UPDATE_STUDENT),
+            createPermission(Permission.PermissionName.DELETE_STUDENT),
+            createPermission(Permission.PermissionName.MANAGE_ROLES),
+            createPermission(Permission.PermissionName.MANAGE_PERMISSIONS),
+            createPermission(Permission.PermissionName.VIEW_REPORTS),
+            createPermission(Permission.PermissionName.MANAGE_SYSTEM)
+        );
+        
+        permissionRepository.saveAll(permissions);
+        log.info("Permissions initialized successfully");
+    }
+    
+    private Permission createPermission(Permission.PermissionName name) {
+        Permission permission = new Permission();
+        permission.setName(name);
+        return permission;
+    }
+   
+    @Transactional
+    private void initializeRoles() {
+        log.info("Initializing roles...");
+        
+        // Admin role with all permissions
+        Role adminRole = new Role();
+        adminRole.setName(Role.RoleName.ADMIN);
+        adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
+        
+        // Teacher role with specific permissions
+        Set<Permission> teacherPermissions = new HashSet<>(permissionRepository.findAll().stream()
+            .filter(p -> Arrays.asList(
+                Permission.PermissionName.READ_STUDENT,
+                Permission.PermissionName.READ_TEACHER,
+                Permission.PermissionName.UPDATE_TEACHER
+            ).contains(p.getName()))
+            .collect(java.util.stream.Collectors.toSet()));
+        
+        Role teacherRole = new Role();
+        teacherRole.setName(Role.RoleName.TEACHER);
+        teacherRole.setPermissions(teacherPermissions);
+        
+        // Student role with specific permissions
+        Set<Permission> studentPermissions = new HashSet<>(permissionRepository.findAll().stream()
+            .filter(p -> Arrays.asList(
+                Permission.PermissionName.READ_STUDENT,
+                Permission.PermissionName.UPDATE_STUDENT
+            ).contains(p.getName()))
+            .collect(java.util.stream.Collectors.toSet()));
+        
+        Role studentRole = new Role();
+        studentRole.setName(Role.RoleName.STUDENT);
+        studentRole.setPermissions(studentPermissions);
+        
+        // Parent role with specific permissions
+        Set<Permission> parentPermissions = new HashSet<>(permissionRepository.findAll().stream()
+            .filter(p -> Arrays.asList(
+                Permission.PermissionName.READ_STUDENT
+            ).contains(p.getName()))
+            .collect(java.util.stream.Collectors.toSet()));
+        
+        Role parentRole = new Role();
+        parentRole.setName(Role.RoleName.PARENT);
+        parentRole.setPermissions(parentPermissions);
+        
+        roleRepository.saveAll(Arrays.asList(adminRole, teacherRole, studentRole, parentRole));
+        log.info("Roles initialized successfully");
+    }
+    
+    @Transactional
+    private void createAdminUser() {
+        log.info("Creating admin user...");
+        
+        Role adminRole = roleRepository.findByName(Role.RoleName.ADMIN)
+            .orElseThrow(() -> new RuntimeException("Admin role not found"));
+        
+        User adminUser = new User();
+        adminUser.setFirstName("Admin");
+        adminUser.setLastName("User");
+        adminUser.setEmail("admin@school.com");
+        adminUser.setUsername("admin@school.com"); // Set username to match email
+        adminUser.setPassword(passwordEncoder.encode("admin123"));
+        adminUser.setRoles(Set.of(adminRole));
+        adminUser.setRole("ADMIN"); // Set the direct role field to match the role enum
+        adminUser.setIsActive(true);
+        adminUser.setIsEmailVerified(true);
+        
+        userRepository.save(adminUser);
+        log.info("Admin user created successfully");
+    }
+    
+//    @Transactional
+//    private void createTestTeacher() {
+//        Role teacherRole = roleRepository.findByName("TEACHER")
+//            .orElseThrow(() -> new RuntimeException("Teacher role not found"));
+//            
+//        User teacherUser = User.builder()
+//            .username("teacher")
+//            .password(passwordEncoder.encode("teacher123"))
+//            .email("teacher@school.com")
+//            .roles(Set.of(teacherRole))
+//            .phoneNumber("2345678901")
+//            .role("TEACHER")  // Set the role field
 //            .build();
-//        
-//        userRepository.save(adminUser);
-//        log.info("Admin user created successfully");
+//            
+//        userRepository.save(teacherUser);
+//        log.info("Test teacher user created successfully");
 //    }
-//}
+//    
+//    @Transactional
+//    private void createTestStudent() {
+//        Role studentRole = roleRepository.findByName("STUDENT")
+//            .orElseThrow(() -> new RuntimeException("Student role not found"));
+//            
+//        User studentUser = User.builder()
+//            .username("student")
+//            .password(passwordEncoder.encode("student123"))
+//            .email("student@school.com")
+//            .roles(Set.of(studentRole))
+//            .phoneNumber("3456789012")
+//            .role("STUDENT")  // Set the role field
+//            .build();
+//            
+//        userRepository.save(studentUser);
+//        log.info("Test student user created successfully");
+//    }
+//    
+//    @Transactional
+//    public User createUser(String username, String password, String email, String phoneNumber, String roleName) {
+//        Role role = roleRepository.findByName(roleName)
+//            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+//            
+//        User user = User.builder()
+//            .username(username)
+//            .password(passwordEncoder.encode(password))
+//            .email(email)
+//            .roles(Set.of(role))
+//            .phoneNumber(phoneNumber)
+//            .role(roleName)  // Set the role field
+//            .build();
+//            
+//        return userRepository.save(user);
+//    }
+}

@@ -1,45 +1,56 @@
 package com.jaydee.School.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jaydee.School.DTO.StudentDTO;
 import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.entity.Student;
+import com.jaydee.School.mapper.StudentMapper;
 import com.jaydee.School.repository.StudentRepository;
 import com.jaydee.School.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class StudentServiceImpl implements StudentService {
 
 	private final StudentRepository studentRepository;
-//	private final StudentService studentService;
+	private final StudentMapper studentMapper;
 
 	@Override
-	@Transactional
-	public Student create(Student student) {
-		validateStudent(student);
-		return studentRepository.save(student);
+	public StudentDTO createStudent(Student student) {
+		Student savedStudent = studentRepository.save(student);
+		return studentMapper.toStudentDTO(savedStudent);
 	}
 
 	@Override
-	public Student getById(Long id) {
-		return studentRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFound("Student", id));
+	public StudentDTO getStudentById(Long id) {
+		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
+		return studentMapper.toStudentDTO(student);
 	}
 
 	@Override
-	public List<Student> getAllStudent() {
-		return studentRepository.findAll();
+	public List<StudentDTO> getAllStudents() {
+		return studentRepository.findAll().stream().map(studentMapper::toStudentDTO).collect(Collectors.toList());
 	}
 
 	@Override
-	@Transactional
-	public void deleteById(Long id) {
+	public StudentDTO updateStudent(Long id, Student student) {
+		Student existingStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
+
+		studentMapper.updateEntityFromDTO(studentMapper.toStudentDTO(student), existingStudent);
+		Student updatedStudent = studentRepository.save(existingStudent);
+		return studentMapper.toStudentDTO(updatedStudent);
+	}
+
+	@Override
+	public void deleteStudent(Long id) {
 		if (!studentRepository.existsById(id)) {
 			throw new ResourceNotFound("Student", id);
 		}
@@ -47,25 +58,25 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	@Transactional
-	public Student updateStudent(Long id, Student studentUpdate) {
-		return studentRepository.findById(id)
-				.map(existingStudent -> {
-					if (studentUpdate.getFirstName() != null && !studentUpdate.getFirstName().isBlank()) {
-						existingStudent.setFirstName(studentUpdate.getFirstName());
-					}
-					if (studentUpdate.getLastName() != null && !studentUpdate.getLastName().isBlank()) {
-						existingStudent.setLastName(studentUpdate.getLastName());
-					}
-					if (studentUpdate.getDob() != null) {
-						existingStudent.setDob(studentUpdate.getDob());
-					}
-					if (studentUpdate.getGender() != null && !studentUpdate.getGender().isBlank()) {
-						existingStudent.setGender(studentUpdate.getGender());
-					}
-					return studentRepository.save(existingStudent);
-				})
-				.orElseThrow(() -> new ResourceNotFound("Student", id));
+	public List<StudentDTO> getStudentsByClass(String className) {
+		return studentRepository.findByClassEntity_ClassName(className).stream().map(studentMapper::toStudentDTO)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public StudentDTO activateStudent(Long id) {
+		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
+		student.setIsActive(true);
+		Student updatedStudent = studentRepository.save(student);
+		return studentMapper.toStudentDTO(updatedStudent);
+	}
+
+	@Override
+	public StudentDTO deactivateStudent(Long id) {
+		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
+		student.setIsActive(false);
+		Student updatedStudent = studentRepository.save(student);
+		return studentMapper.toStudentDTO(updatedStudent);
 	}
 
 	private void validateStudent(Student student) {
@@ -75,15 +86,11 @@ public class StudentServiceImpl implements StudentService {
 		if (student.getLastName() == null || student.getLastName().isBlank()) {
 			throw new IllegalArgumentException("Last name cannot be null or empty");
 		}
-		if (student.getGender() == null || student.getGender().isBlank()) {
-			throw new IllegalArgumentException("Gender cannot be null or empty");
+		if (student.getGender() == null) {
+			throw new IllegalArgumentException("Gender cannot be null");
 		}
 		if (student.getDob() == null) {
 			throw new IllegalArgumentException("Date of birth cannot be null");
 		}
 	}
-
-
-
-
 }

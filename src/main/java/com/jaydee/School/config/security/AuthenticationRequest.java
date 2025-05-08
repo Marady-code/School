@@ -1,15 +1,20 @@
-//package com.jaydee.School.config.jwt;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Builder;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//
-//@Data
-//@Builder
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class AuthenticationRequest {
-//    private String username;
-//    private String password;
-//} 
+package com.jaydee.School.config.security;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthenticationRequest {
+    
+    @NotBlank(message = "Username is required")
+    private String username;
+    
+    @NotBlank(message = "Password is required")
+    private String password;
+}

@@ -1,50 +1,62 @@
 server:
   port: 8080
-#  servlet:
-#    context-path: /api
-#  tomcat:
-#    max-threads: 200
-#    min-spare-threads: 20
-#    max-connections: 10000
-#    connection-timeout: 5000
+  servlet:
+    context-path: /api
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    connection-timeout: 5000
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: jdbc:postgresql://localhost:5432/School
     username: School
     password: 150304
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      max-lifetime: 1200000
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
-#    show-sql: true
+    show-sql: true
     properties:
       hibernate:
-#        format_sql: true
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-#        jdbc:
-#          batch_size: 50
-#          batch_versioned_data: true
-#        order_inserts: true
-#        order_updates: true
-#        generate_statistics: true
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    enabled: false
-    default-schema: public
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-app-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    user:
+      name: admin
+      password: admin
 
-#  spring:
-#    jwt:
-#      secret: 9a4f2c8d3b7a1e6f45c8a0b3f267d8b1d4e6f3c8a9d2b5f8e3a7c4d9f2e5b8a
-#      expiration: 86400000 # 24 hours
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.yaml
+  enabled: true
+  default-schema: public
+
+jwt:
+  secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours in milliseconds
+  refresh-token:
+    expiration: 604800000 # 7 days in milliseconds
 
 springdoc:
   swagger-ui:
@@ -61,17 +73,10 @@ springdoc:
   packages-to-scan: com.jaydee.School.Controller
   paths-to-match: /**
 
-#logging:
-#  level:
-#    root: INFO
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-#    com.jaydee.School: DEBUG
-#    org.springframework.security: DEBUG
-#  pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-#    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-#  file:
-#    name: logs/application.log
-#    max-size: 10MB
-#    max-history: 30
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+
+file:
+  upload-dir: ./uploads

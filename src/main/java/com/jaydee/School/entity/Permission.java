@@ -1,28 +1,59 @@
 package com.jaydee.School.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.Set;
+import java.util.HashSet;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Entity
-@Table(name = "permissions")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "permissions")
+@EqualsAndHashCode(exclude = {"roles"})
+@ToString(exclude = {"roles"})
 public class Permission {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private PermissionName name;
+
+    @Column
+    private String description;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Set<Role> roles;
+
+    public enum PermissionName {
+        CREATE_USER,
+        READ_USER,
+        UPDATE_USER,
+        DELETE_USER,
+        CREATE_ADMIN,
+        READ_ADMIN,
+        UPDATE_ADMIN,
+        DELETE_ADMIN,
+        CREATE_TEACHER,
+        READ_TEACHER,
+        UPDATE_TEACHER,
+        DELETE_TEACHER,
+        CREATE_STUDENT,
+        READ_STUDENT,
+        UPDATE_STUDENT,
+        DELETE_STUDENT,
+        MANAGE_ROLES,
+        MANAGE_PERMISSIONS,
+        VIEW_REPORTS,
+        MANAGE_SYSTEM
+    }
 }
