@@ -1,45 +1,81 @@
 package com.jaydee.School.service.impl;
 
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.jaydee.School.service.EmailService;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
-	private final JavaMailSender mailSender;
-
-	@Override
-	public void sendPasswordResetEmail(String to, String newPassword) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject("Password Reset");
-		message.setText("Your new password is: " + newPassword + "\n\nPlease change your password after logging in.");
-		mailSender.send(message);
-	}
-
-	@Override
-	public void sendWelcomeEmail(String to, String firstName) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject("Welcome to School Management System");
-		message.setText(
-				"Dear " + firstName + ",\n\nWelcome to our School Management System. We're glad to have you on board!");
-		mailSender.send(message);
-	}
-
-	@Override
-	public void sendEmailVerificationEmail(String to, String token) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject("Email Verification");
-		message.setText("Please click the following link to verify your email: "
-				+ "http://localhost:8080/api/auth/verify-email?token=" + token);
-		mailSender.send(message);
-	}
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
+    
+    @Value("${app.url:http://localhost:8080}")
+    private String baseUrl;
+    
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+    
+    @Async
+    @Override
+    public void sendVerificationEmail(String to, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("School Management System - Email Verification");
+            
+            Context context = new Context();
+            context.setVariable("verificationLink", baseUrl + "/api/auth/verify?token=" + token);
+            context.setVariable("userName", to.split("@")[0]);
+            
+            String htmlContent = templateEngine.process("verification-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Verification email sent to: {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send verification email to: {}", to, e);
+        }
+    }
+    
+    @Async
+    @Override
+    public void sendPasswordResetEmail(String to, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("School Management System - Password Reset Request");
+            
+            Context context = new Context();
+            context.setVariable("resetLink", baseUrl + "/api/auth/reset-password?token=" + token);
+            context.setVariable("userName", to.split("@")[0]);
+            
+            String htmlContent = templateEngine.process("password-reset-email", context);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Password reset email sent to: {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send password reset email to: {}", to, e);
+        }
+    }
 }

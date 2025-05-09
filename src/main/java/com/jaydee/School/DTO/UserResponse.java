@@ -3,7 +3,7 @@ package com.jaydee.School.DTO;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.jaydee.School.entity.Role;
+import com.jaydee.School.config.security.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -3,10 +3,12 @@ package com.jaydee.School.service;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import com.jaydee.School.DTO.AuthenticationRequest;
+
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.Specification.UserFilter;
+import com.jaydee.School.config.security.AuthenticationRequest;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService extends UserDetailsService {

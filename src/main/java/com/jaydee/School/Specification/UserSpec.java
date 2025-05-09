@@ -1,7 +1,8 @@
 package com.jaydee.School.Specification;
 
+import com.jaydee.School.config.security.Role;
 import com.jaydee.School.entity.User;
-import com.jaydee.School.entity.Role;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.Predicate;

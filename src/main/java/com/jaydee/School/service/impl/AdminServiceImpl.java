@@ -15,7 +15,7 @@ import com.jaydee.School.DTO.AdminCreateRequest;
 import com.jaydee.School.DTO.AdminUpdateRequest;
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.Exception.ResourceNotFound;
-import com.jaydee.School.entity.Role;
+import com.jaydee.School.config.security.Role;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.RoleRepository;

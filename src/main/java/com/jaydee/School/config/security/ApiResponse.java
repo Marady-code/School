@@ -1,4 +1,4 @@
-package com.jaydee.School.DTO;
+package com.jaydee.School.config.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

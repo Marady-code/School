@@ -1,4 +1,4 @@
-package com.jaydee.School.entity;
+package com.jaydee.School.config.security;
 
 import java.util.Set;
 import java.util.HashSet;

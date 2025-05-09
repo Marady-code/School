@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationRequest {
     
-    @NotBlank(message = "Username is required")
+    @NotBlank(message = "Username or email is required")
     private String username;
     
     @NotBlank(message = "Password is required")

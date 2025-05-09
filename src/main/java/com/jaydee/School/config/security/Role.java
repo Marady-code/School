@@ -1,4 +1,4 @@
-package com.jaydee.School.entity;
+package com.jaydee.School.config.security;
 
 import java.time.LocalDateTime;
 import java.util.Set;

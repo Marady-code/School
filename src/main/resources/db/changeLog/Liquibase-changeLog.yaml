@@ -1,5 +1,0 @@
-databaseChangeLog:
-- include :
-   - file: db/changeLog/001_init_db_schema.yml
-- include :
-   - file: db/changeLog/002_insert_students.yml

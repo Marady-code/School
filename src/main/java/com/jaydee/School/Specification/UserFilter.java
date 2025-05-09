@@ -1,8 +1,9 @@
 package com.jaydee.School.Specification;
 
-import com.jaydee.School.entity.Role;
 import lombok.Data;
 import org.springframework.data.domain.Sort;
+
+import com.jaydee.School.config.security.Role;
 
 @Data
 public class UserFilter {

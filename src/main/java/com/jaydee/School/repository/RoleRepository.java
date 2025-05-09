@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.jaydee.School.entity.Role;
+import com.jaydee.School.config.security.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {

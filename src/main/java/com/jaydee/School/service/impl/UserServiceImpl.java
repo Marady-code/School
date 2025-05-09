@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.annotation.Primary;
 
-import com.jaydee.School.DTO.AuthenticationRequest;
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.Specification.UserFilter;
 import com.jaydee.School.Specification.UserSpec;
+import com.jaydee.School.config.security.AuthenticationRequest;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.UserRepository;
