@@ -27,26 +27,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationProvider authenticationProvider;
-
-    @Bean
+    private final AuthenticationProvider authenticationProvider;    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
+            // Configure session management first
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )            .authorizeHttpRequests(auth -> auth
+                // Public endpoints - these don't require authentication
+                .requestMatchers("/auth/**").permitAll() 
+                .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/error", "/error/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
-                
-                // Role-based endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/teacher/**").hasRole("TEACHER")
-                .requestMatchers("/api/student/**").hasRole("STUDENT")
-                .requestMatchers("/api/parent/**").hasRole("PARENT")
+                  // Role-based endpoints
+                .requestMatchers("/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                .requestMatchers("/admins/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                .requestMatchers("/users/**").hasAnyRole("SUPER_ADMIN", "ADMIN") 
+                .requestMatchers("/teacher/**", "/teachers/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "TEACHER")
+                .requestMatchers("/student/**", "/students/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT")
+                .requestMatchers("/parent/**", "/parents/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "PARENT")
                 
                 // All other endpoints require authentication
                 .anyRequest()
@@ -62,12 +64,10 @@ public class SecurityConfig {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.getWriter().write("{\"error\":\"Forbidden\",\"message\":\"Access denied\"}");
-                })
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+                })            )
+            // Authentication provider
             .authenticationProvider(authenticationProvider)
+            // Apply the JWT filter only for secured endpoints
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

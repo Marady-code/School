@@ -1,12 +1,9 @@
 package com.jaydee.School.config.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jaydee.School.service.JwtService;
-import com.jaydee.School.service.UserService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -17,9 +14,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jaydee.School.service.UserService;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,15 +36,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
         this.userService = userService;
         this.objectMapper = objectMapper;
-    }
-
-    @Override
+    }    @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        try {
+        try {            // Skip filter for public paths (auth endpoints and swagger)
+            String path = request.getRequestURI();
+            // Log the requested path for debugging
+            System.out.println("URI requested: " + path);
+            
+            if (path.startsWith("/api/auth/") || path.startsWith("/auth/") || 
+                path.startsWith("/api/public/") || path.startsWith("/public/") || 
+                path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs/")) {
+                System.out.println("Skipping JWT filter for public path: " + path);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             final String authHeader = request.getHeader("Authorization");
             final String jwt;
             final String email;

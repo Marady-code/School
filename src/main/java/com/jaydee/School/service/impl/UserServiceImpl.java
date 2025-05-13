@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.context.annotation.Primary;
 
 import com.jaydee.School.DTO.AuthenticationRequest;
 import com.jaydee.School.DTO.UserResponse;
@@ -25,6 +25,7 @@ import com.jaydee.School.Specification.UserSpec;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.UserRepository;
+import com.jaydee.School.service.EmailService;
 import com.jaydee.School.service.UserService;
 
 @Service
@@ -35,17 +36,20 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     public UserServiceImpl(
         UserRepository userRepository,
         UserMapper userMapper,
         PasswordEncoder passwordEncoder,
-        @Lazy AuthenticationManager authenticationManager
+        @Lazy AuthenticationManager authenticationManager,
+        EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
     }
 
     @Override
@@ -152,14 +156,41 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(userRepository.save(user));
     }
 
+    @Transactional
+    public void requestPasswordReset(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String newPassword = generateRandomPassword();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            emailService.sendPasswordResetEmail(email, newPassword);
+        });
+        // We don't throw an exception if email is not found for security reasons
+    }
+
     @Override
+    @Transactional
     public UserResponse resetPassword(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         String newPassword = generateRandomPassword();
         user.setPassword(passwordEncoder.encode(newPassword));
-        // TODO: Send email with new password
-        return userMapper.toDTO(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        // Send email with new password
+        emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+        return userMapper.toDTO(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse resetPassword(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("User", id));
+        String newPassword = generateRandomPassword();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        User updatedUser = userRepository.save(user);
+        // Send email with new password
+        emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+        return userMapper.mapToUserResponse(updatedUser);
     }
 
     @Override
@@ -180,6 +211,36 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // TODO: Implement profile picture upload logic
         return userMapper.toDTO(user);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+    
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+    
+    @Override
+    @Transactional
+    public UserResponse activateUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("User", id));
+        user.setIsActive(true);
+        User activatedUser = userRepository.save(user);
+        return userMapper.mapToUserResponse(activatedUser);
+    }
+    
+    @Override
+    @Transactional
+    public UserResponse deactivateUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("User", id));
+        user.setIsActive(false);
+        User deactivatedUser = userRepository.save(user);
+        return userMapper.mapToUserResponse(deactivatedUser);
     }
 
     private String generateRandomPassword() {

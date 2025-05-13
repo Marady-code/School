@@ -1,6 +1,7 @@
 package com.jaydee.School.config.jwt;
 
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -8,16 +9,18 @@ import com.jaydee.School.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtServiceImpl implements JwtService {
     
-    @Value("${jwt.secret-key}")
-    private String secretKey;
+    private final SecretKey secretKey;
     
     @Value("${jwt.expiration}")
     private long jwtExpiration;
+    
+    public JwtServiceImpl(SecretKey jwtSecretKey) {
+        this.secretKey = jwtSecretKey;
+    }
 
     @Override
     public String generateToken(String username) {
@@ -27,13 +30,13 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS512)
+                .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     @Override
     public String generateToken(User user) {
-        return generateToken(user.getUsername());
+        return generateToken(user.getEmail()); // Use email directly instead of getUsername()
     }
 
     @Override
@@ -45,13 +48,11 @@ public class JwtServiceImpl implements JwtService {
     public String getUsernameFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         return claims.getSubject();
-    }
-
-    @Override
+    }    @Override
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token);
             return true;
@@ -74,17 +75,21 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        // Add debug logging
+        System.out.println("Token validation - Username from token: " + username);
+        System.out.println("Token validation - Username from UserDetails: " + userDetails.getUsername());
+        System.out.println("Token validation - Token expired: " + isTokenExpired(token));
+        System.out.println("Token validation - Result: " + isValid);
+        return isValid;
     }
 
     @Override
     public long getExpirationTime() {
         return jwtExpiration;
-    }
-
-    private Claims getAllClaimsFromToken(String token) {
+    }    private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

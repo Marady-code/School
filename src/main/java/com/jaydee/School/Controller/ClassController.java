@@ -24,7 +24,7 @@ public class ClassController {
     private final ClassService classService;
     
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> createClass(@Valid @RequestBody ClassEntity classEntity) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED)

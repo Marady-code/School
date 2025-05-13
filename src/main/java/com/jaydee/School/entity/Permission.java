@@ -32,9 +32,7 @@ public class Permission {
     private String description;
 
     @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles;
-
-    public enum PermissionName {
+    private Set<Role> roles;    public enum PermissionName {
         CREATE_USER,
         READ_USER,
         UPDATE_USER,
@@ -55,5 +53,30 @@ public class Permission {
         MANAGE_PERMISSIONS,
         VIEW_REPORTS,
         MANAGE_SYSTEM
+    }
+    
+    // Explicit getter and setter methods
+    public PermissionName getName() {
+        return name;
+    }
+    
+    public void setName(PermissionName name) {
+        this.name = name;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    public Set<Role> getRoles() {
+        return roles;
+    }
+    
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

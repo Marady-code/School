@@ -33,8 +33,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: your-email@gmail.com
-    password: your-app-password
+    username: school.management.system@gmail.com
+    password: ${MAIL_APP_PASSWORD:nhgcpnryefkmotkz}
     properties:
       mail:
         smtp:
@@ -58,6 +58,11 @@ jwt:
   refresh-token:
     expiration: 604800000 # 7 days in milliseconds
 
+app:
+  security:
+    jwt:
+      secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -77,6 +82,10 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    com.jaydee.School: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 file:
   upload-dir: ./uploads

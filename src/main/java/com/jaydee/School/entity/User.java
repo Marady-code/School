@@ -118,10 +118,9 @@ public class User implements UserDetails {
         });
         return authorities;
     }
-    
-    @Override
+      @Override
     public String getUsername() {
-        return username != null ? username : email;
+        return email; // Always use email for authentication consistency
     }
     
     @Override

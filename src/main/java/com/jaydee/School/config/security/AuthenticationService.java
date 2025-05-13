@@ -53,6 +53,8 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
+        System.out.println("Registration attempt for email: " + request.getEmail());
+        
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomAuthenticationException("Email already exists");
         }
@@ -80,31 +82,40 @@ public class AuthenticationService {
             roleNameEnum = Role.RoleName.STUDENT;
         }
         
+        System.out.println("Looking for role: " + roleNameEnum);
+        
         Role role = roleRepository.findByName(roleNameEnum)
-            .orElseThrow(() -> new CustomAuthenticationException("Invalid role: " + roleNameEnum));
+            .orElseThrow(() -> {
+                System.out.println("Role not found: " + roleNameEnum);
+                return new CustomAuthenticationException("Invalid role: " + roleNameEnum);
+            });
 
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
+        user.setEmail(request.getEmail());        user.setUsername(request.getEmail()); // Ensure username is set to email for consistency
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRoles(Set.of(role));
+        // Set the role string value for the direct column
+        user.setRole(roleNameEnum.name());
         user.setIsActive(true);
         user.setIsEmailVerified(false);
         
+        System.out.println("Saving user with email: " + user.getEmail());
         userRepository.save(user);
-        
-        String jwt = jwtService.generateToken(user);
+          String jwt = jwtService.generateToken(user);
         List<String> roles = user.getRoles().stream()
             .map(r -> r.getName().name())
             .collect(Collectors.toList());
 
+        System.out.println("Generated token for user: " + user.getEmail());
+        
         return AuthenticationResponse.builder()
             .token(jwt)
             .type("Bearer")
             .id(user.getId())
-            .username(user.getEmail())
+            .username(user.getUsername()) // Use the username field instead of email
             .email(user.getEmail())
             .roles(roles)
             .success(true)
@@ -125,9 +136,7 @@ public class AuthenticationService {
             );
 
             User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CustomAuthenticationException("User not found"));
-
-            String jwt = jwtService.generateToken(user);
+                .orElseThrow(() -> new CustomAuthenticationException("User not found"));            String jwt = jwtService.generateToken(user);
             List<String> roles = user.getRoles().stream()
                 .map(r -> r.getName().name())
                 .collect(Collectors.toList());
@@ -136,7 +145,7 @@ public class AuthenticationService {
                 .token(jwt)
                 .type("Bearer")
                 .id(user.getId())
-                .username(user.getEmail())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(roles)
                 .success(true)
@@ -162,13 +171,11 @@ public class AuthenticationService {
         String jwt = jwtService.generateToken(user);
         List<String> roles = user.getRoles().stream()
             .map(r -> r.getName().name())
-            .collect(Collectors.toList());
-
-        return AuthenticationResponse.builder()
+            .collect(Collectors.toList());        return AuthenticationResponse.builder()
             .token(jwt)
             .type("Bearer")
             .id(user.getId())
-            .username(user.getEmail())
+            .username(user.getUsername())
             .email(user.getEmail())
             .roles(roles)
             .success(true)

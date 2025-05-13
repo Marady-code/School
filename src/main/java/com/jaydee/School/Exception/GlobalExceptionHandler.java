@@ -1,5 +1,6 @@
 package com.jaydee.School.Exception;
 
+// import java.time.LocalDateTime; // Not used
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            ex.getMessage(),
+            request.getDescription(false)
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(ResourceNotFound.class)
     protected ResponseEntity<Object> handleResourceNotFound(
@@ -82,8 +92,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         
         apiError.setSubErrors(subErrors);
         return buildResponseEntity(apiError);
+    }    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    protected ResponseEntity<Object> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex, WebRequest request) {
+        ApiError apiError = new ApiError(
+            HttpStatus.FORBIDDEN,
+            "Access denied: You don't have permission to access this resource",
+            ex);
+        return buildResponseEntity(apiError);
     }
-
+    
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleAllOtherExceptions(
             Exception ex, WebRequest request) {

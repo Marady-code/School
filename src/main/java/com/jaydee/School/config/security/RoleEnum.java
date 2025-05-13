@@ -1,7 +1,5 @@
 //package com.jaydee.School.config.security;
 //
-//import static com.jaydee.School.config.security.PermissionEnum.*;
-//
 //import java.util.Set;
 //import java.util.stream.Collectors;
 //

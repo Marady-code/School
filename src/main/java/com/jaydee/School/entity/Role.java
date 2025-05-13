@@ -72,4 +72,30 @@ public class Role {
         STUDENT,
         PARENT
     }
+    
+    // Explicit getter and setter methods to ensure they're properly generated
+    
+    public RoleName getName() {
+        return name;
+    }
+    
+    public void setName(RoleName name) {
+        this.name = name;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+    
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
 }

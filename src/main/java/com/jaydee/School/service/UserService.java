@@ -18,10 +18,16 @@ public interface UserService extends UserDetailsService {
     UserResponse updatePassword(Long id, String oldPassword, String newPassword);
     UserResponse login(AuthenticationRequest loginDTO);
     UserResponse register(User user);
+    UserResponse resetPassword(Long id);
+    void requestPasswordReset(String email);
     UserResponse resetPassword(String email);
     UserResponse verifyEmail(String token);
     UserResponse getUserProfile(Long id);
     UserResponse updateProfilePicture(Long id, MultipartFile file);
     void deleteUser(Long id);
     Page<UserResponse> findUsersWithFilters(UserFilter filter);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    UserResponse activateUser(Long id);
+    UserResponse deactivateUser(Long id);
 }
