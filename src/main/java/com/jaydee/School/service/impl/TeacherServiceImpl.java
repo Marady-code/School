@@ -28,7 +28,6 @@ public class TeacherServiceImpl implements TeacherService {
 		Teacher savedTeacher = teacherRepository.save(teacher);
 		return teacherMapper.toTeacherDTO(savedTeacher);
 	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public TeacherDTO getTeacherById(Long id) {
@@ -41,7 +40,6 @@ public class TeacherServiceImpl implements TeacherService {
 	public List<TeacherDTO> getAllTeachers() {
 		return teacherRepository.findAll().stream().map(teacherMapper::toTeacherDTO).collect(Collectors.toList());
 	}
-
 	@Override
 	@Transactional
 	public TeacherDTO updateTeacher(Long id, Teacher teacherUpdate) {
@@ -76,7 +74,6 @@ public class TeacherServiceImpl implements TeacherService {
 		Teacher updatedTeacher = teacherRepository.save(teacher);
 		return teacherMapper.toTeacherDTO(updatedTeacher);
 	}
-
 	@Override
 	@Transactional
 	public void deleteTeacher(Long id) {
@@ -90,7 +87,6 @@ public class TeacherServiceImpl implements TeacherService {
 		return teacherRepository.findBySubjectsName(subject).stream().map(teacherMapper::toTeacherDTO)
 				.collect(Collectors.toList());
 	}
-
 	@Override
 	@Transactional
 	public TeacherDTO activateTeacher(Long id) {

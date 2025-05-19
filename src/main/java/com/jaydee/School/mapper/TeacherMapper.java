@@ -14,11 +14,9 @@ import com.jaydee.School.entity.Teacher;
 public interface TeacherMapper {
 
 	TeacherMapper INSTANCE = Mappers.getMapper(TeacherMapper.class);
-	
-	@Mapping(target = "name", source = "firstName")
+		@Mapping(target = "name", source = "firstName")
 	@Mapping(target = "subject", source = "specialization")
 	@Mapping(target = "userId", source = "user.id")
-	@Mapping(target = "studentIds", ignore = true)
 	@Mapping(target = "classIds", ignore = true)
 	TeacherDTO toTeacherDTO(Teacher entity);
 	
@@ -30,12 +28,10 @@ public interface TeacherMapper {
 	@Mapping(target = "qualification", ignore = true)
 	@Mapping(target = "specialization", source = "subject")
 	@Mapping(target = "experienceYears", ignore = true)
-	@Mapping(target = "isActive", ignore = true)
-	@Mapping(target = "subjects", ignore = true)
+	@Mapping(target = "isActive", ignore = true)	@Mapping(target = "subjects", ignore = true)
 	@Mapping(target = "createdAt", ignore = true)
 	@Mapping(target = "updatedAt", ignore = true)
 	@Mapping(target = "user", ignore = true)
-	@Mapping(target = "students", ignore = true)
 	@Mapping(target = "classes", ignore = true)
 	Teacher toEntity(TeacherDTO teacherDTO);
 	
@@ -48,12 +44,10 @@ public interface TeacherMapper {
 	@Mapping(target = "qualification", ignore = true)
 	@Mapping(target = "specialization", source = "subject")
 	@Mapping(target = "experienceYears", ignore = true)
-	@Mapping(target = "isActive", ignore = true)
-	@Mapping(target = "subjects", ignore = true)
+	@Mapping(target = "isActive", ignore = true)	@Mapping(target = "subjects", ignore = true)
 	@Mapping(target = "createdAt", ignore = true)
 	@Mapping(target = "updatedAt", ignore = true)
 	@Mapping(target = "user", ignore = true)
-	@Mapping(target = "students", ignore = true)
 	@Mapping(target = "classes", ignore = true)
 	void updateEntityFromDTO(TeacherDTO teacherDTO, @MappingTarget Teacher teacher);
 	

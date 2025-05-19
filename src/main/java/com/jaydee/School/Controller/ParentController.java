@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jaydee.School.entity.Parent;
 import com.jaydee.School.entity.Student;
 import com.jaydee.School.service.ParentService;
+import com.jaydee.School.service.UserSecurityService;
 
 @RestController
 @RequestMapping("/parents")
@@ -24,30 +25,27 @@ public class ParentController {
 
     @Autowired
     private ParentService parentService;
+    
+    @Autowired
+    private UserSecurityService securityService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Parent> createParent(@RequestBody Parent parent) {
         return ResponseEntity.ok(parentService.createParent(parent));
-    }
-
-    @PutMapping("/{id}")
+    }    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isCurrentUser(#id)")
     public ResponseEntity<Parent> updateParent(
             @PathVariable Long id,
             @RequestBody Parent parent) {
         return ResponseEntity.ok(parentService.updateParent(id, parent));
-    }
-
-    @GetMapping("/student/{studentId}")
+    }    @GetMapping("/student/{studentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PARENT') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<Parent>> getParentsByStudent(@PathVariable Long studentId) {
         Student student = new Student();
         student.setId(studentId);
         return ResponseEntity.ok(parentService.getParentsByStudent(student));
-    }
-
-    @DeleteMapping("/{id}")
+    }    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteParent(@PathVariable Long id) {
         parentService.deleteParent(id);

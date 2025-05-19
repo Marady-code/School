@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="008" author="jaydee">
+        <comment>Create migration script to update subject_id based on subject name</comment>
+        
+        <sql>
+            -- This is a sample migration script that can be customized based on your data
+            -- It attempts to match exam_results.subject with subjects.name
+            UPDATE exam_results er
+            SET subject_id = (
+                SELECT s.id 
+                FROM subjects s 
+                WHERE LOWER(s.name) = LOWER(er.subject) 
+                LIMIT 1
+            )
+            WHERE er.subject IS NOT NULL AND er.subject != '';
+        </sql>
+        
+        <!-- Drop the old subject column after subject_id is populated and verified -->
+        <comment>Note: Please verify data migration before running this next part</comment>
+        
+        <!-- Uncomment this section after confirming data migration
+        <dropColumn tableName="exam_results" columnName="subject"/>
+        -->
+    </changeSet>
+</databaseChangeLog>

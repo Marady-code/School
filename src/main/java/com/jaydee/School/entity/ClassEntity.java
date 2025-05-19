@@ -30,7 +30,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "classes")
 public class ClassEntity {
-	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "class_id")

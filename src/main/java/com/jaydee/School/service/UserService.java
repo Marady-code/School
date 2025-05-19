@@ -9,20 +9,17 @@ import com.jaydee.School.entity.User;
 import com.jaydee.School.Specification.UserFilter;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface UserService extends UserDetailsService {
-    UserResponse getUserById(Long id);
+public interface UserService extends UserDetailsService {    UserResponse getUserById(Long id);
     UserResponse getUserByEmail(String email);
     List<UserResponse> getAllUsers();
     UserResponse createUser(User user);
     UserResponse updateUser(Long id, User user);
     UserResponse updatePassword(Long id, String oldPassword, String newPassword);
     UserResponse login(AuthenticationRequest loginDTO);
-    UserResponse register(User user);
-    UserResponse resetPassword(Long id);
+    UserResponse register(User user);    UserResponse resetPassword(Long id);
     void requestPasswordReset(String email);
     UserResponse resetPassword(String email);
-    UserResponse verifyEmail(String token);
-    UserResponse getUserProfile(Long id);
+    UserResponse verifyEmail(String token);    UserResponse getUserProfile(Long id);
     UserResponse updateProfilePicture(Long id, MultipartFile file);
     void deleteUser(Long id);
     Page<UserResponse> findUsersWithFilters(UserFilter filter);

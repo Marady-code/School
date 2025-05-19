@@ -17,20 +17,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "subjects")
 public class Subject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
-    private String code;
-    private String description;
+	private String name;
+	private String code;
+	private String description;
 
-    private Integer credits;
+	private Integer credits;
 
-    private String academicYear;
-    private String term;
+	private String academicYear;
+	private String term;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id")
-    private Teacher teacher;
+	@ManyToOne
+	@JoinColumn(name = "teacher_id")
+	private Teacher teacher;
 }

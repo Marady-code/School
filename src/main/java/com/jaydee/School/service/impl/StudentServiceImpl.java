@@ -28,7 +28,6 @@ public class StudentServiceImpl implements StudentService {
 		Student savedStudent = studentRepository.save(student);
 		return studentMapper.toStudentDTO(savedStudent);
 	}
-
 	@Override
 	public StudentDTO getStudentById(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -39,7 +38,6 @@ public class StudentServiceImpl implements StudentService {
 	public List<StudentDTO> getAllStudents() {
 		return studentRepository.findAll().stream().map(studentMapper::toStudentDTO).collect(Collectors.toList());
 	}
-
 	@Override
 	public StudentDTO updateStudent(Long id, Student student) {
 		Student existingStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -48,7 +46,6 @@ public class StudentServiceImpl implements StudentService {
 		Student updatedStudent = studentRepository.save(existingStudent);
 		return studentMapper.toStudentDTO(updatedStudent);
 	}
-
 	@Override
 	public void deleteStudent(Long id) {
 		if (!studentRepository.existsById(id)) {
@@ -62,7 +59,6 @@ public class StudentServiceImpl implements StudentService {
 		return studentRepository.findByClassEntity_ClassName(className).stream().map(studentMapper::toStudentDTO)
 				.collect(Collectors.toList());
 	}
-
 	@Override
 	public StudentDTO activateStudent(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -70,7 +66,6 @@ public class StudentServiceImpl implements StudentService {
 		Student updatedStudent = studentRepository.save(student);
 		return studentMapper.toStudentDTO(updatedStudent);
 	}
-
 	@Override
 	public StudentDTO deactivateStudent(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));

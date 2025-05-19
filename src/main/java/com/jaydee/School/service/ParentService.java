@@ -6,10 +6,7 @@ import com.jaydee.School.entity.Parent;
 import com.jaydee.School.entity.Student;
 
 public interface ParentService {
-   
-    Parent createParent(Parent parent);
-
-    Parent updateParent(Long id, Parent parent);
+     Parent createParent(Parent parent);    Parent updateParent(Long id, Parent parent);
 
     List<Parent> getParentsByStudent(Student student);
     

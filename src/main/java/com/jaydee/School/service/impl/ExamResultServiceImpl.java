@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.jaydee.School.entity.ExamResult;
 import com.jaydee.School.entity.Student;
+import com.jaydee.School.entity.Subject;
 import com.jaydee.School.entity.Teacher;
 import com.jaydee.School.repository.ExamResultRepository;
 import com.jaydee.School.service.ExamResultService;
@@ -21,7 +22,6 @@ public class ExamResultServiceImpl implements ExamResultService {
 	public ExamResult createExamResult(ExamResult examResult) {
 		return examResultRepository.save(examResult);
 	}
-
 	public ExamResult updateExamResult(Long id, ExamResult examResult) {
 		ExamResult existingResult = examResultRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Exam result not found"));
@@ -29,6 +29,7 @@ public class ExamResultServiceImpl implements ExamResultService {
 		existingResult.setScore(examResult.getScore());
 		existingResult.setRemarks(examResult.getRemarks());
 		existingResult.setExamDate(examResult.getExamDate());
+		existingResult.setSubject(examResult.getSubject());
 
 		return examResultRepository.save(existingResult);
 	}
@@ -40,8 +41,7 @@ public class ExamResultServiceImpl implements ExamResultService {
 	public List<ExamResult> getTeacherResults(Teacher teacher) {
 		return examResultRepository.findByTeacher(teacher);
 	}
-
-	public List<ExamResult> getStudentSubjectResults(Student student, String subject) {
+	public List<ExamResult> getStudentSubjectResults(Student student, Subject subject) {
 		return examResultRepository.findByStudentAndSubject(student, subject);
 	}
 

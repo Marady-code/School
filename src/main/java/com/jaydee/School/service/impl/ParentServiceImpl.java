@@ -20,7 +20,6 @@ public class ParentServiceImpl implements ParentService {
 	public Parent createParent(Parent parent) {
 		return parentRepository.save(parent);
 	}
-
 	public Parent updateParent(Long id, Parent parent) {
 		Parent existingParent = parentRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Parent not found"));
@@ -36,7 +35,6 @@ public class ParentServiceImpl implements ParentService {
 	public List<Parent> getParentsByStudent(Student student) {
 		return parentRepository.findByStudents(student);
 	}
-
 	public void deleteParent(Long id) {
 		parentRepository.deleteById(id);
 	}

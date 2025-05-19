@@ -1,6 +1,7 @@
 package com.jaydee.School.Controller;
 
 import java.time.DayOfWeek;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +90,13 @@ public class TimeTableController {
 
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<Void> deleteTimeTable(@PathVariable Long id) {
-		timeTableService.deleteTimeTable(id);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> deleteTimeTable(@PathVariable Long id) {
+		try {
+			timeTableService.deleteTimeTable(id);
+			return ResponseEntity.ok().build();
+		}catch (Exception e) {
+			return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+		}
+
 	}
 }

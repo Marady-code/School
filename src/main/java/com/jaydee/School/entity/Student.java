@@ -34,7 +34,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "students")
 public class Student {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "student_id")
@@ -57,61 +56,50 @@ public class Student {
 	@Past(message = "Date of birth must be in the past")
 	@Column(name = "date_of_birth", nullable = false)
 	private LocalDate dob;
-	
+
 	@Column(name = "address")
 	private String address;
-	
+
 	@Email(message = "Invalid email format")
 	@Column(name = "email", unique = true)
 	private String email;
-	
+
 	@Column(name = "phone_number")
 	private String phoneNumber;
-	
+
 	@Column(name = "emergency_contact")
 	private String emergencyContact;
-	
 	@Column(name = "emergency_phone")
 	private String emergencyPhone;
-	
-	@Column(name = "blood_type")
-	private String bloodType;
-	
-	@Column(name = "medical_conditions")
-	private String medicalConditions;
-	
+
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = true;
-	
-	@ManyToOne
-	@JoinColumn(name = "teacher_id")
-	private Teacher teacher;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "class_id")
 	private ClassEntity classEntity;
-	
+
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Attendance> attendanceRecords;
-	
+
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ExamResult> examResults;
-	
+
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PerformanceReport> performanceReports;
-	
+
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-	
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
-	
+
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
-	
+
 	public enum Gender {
 		MALE, FEMALE, OTHER
 	}

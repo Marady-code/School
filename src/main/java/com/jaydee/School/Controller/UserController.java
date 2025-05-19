@@ -85,12 +85,11 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/{id}")
+    })    @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @userSecurityService.isCurrentUser(#id)")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
-    }    @Operation(
+    }@Operation(
         summary = "Create new user", 
         description = "Creates a new user with specified role. Only SUPER_ADMIN can create admin users."
     )
@@ -158,8 +157,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PutMapping("/{id}")
+    })    @PutMapping("/{id}")
     @PreAuthorize("hasRole('SUPER_ADMIN') or (hasRole('ADMIN') and @userSecurityService.isNonAdminUser(#id))")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
@@ -176,13 +174,12 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @DeleteMapping("/{id}")
+    })    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('SUPER_ADMIN') or (hasRole('ADMIN') and @userSecurityService.isNonAdminUser(#id))")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }    @Operation(
+    }@Operation(
         summary = "Activate user", 
         description = "Activates a deactivated user account. SUPER_ADMIN can activate any user. ADMIN can only activate non-admin users."
     )
@@ -191,8 +188,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PostMapping("/{id}/activate")
+    })    @PostMapping("/{id}/activate")
     @PreAuthorize("hasRole('SUPER_ADMIN') or (hasRole('ADMIN') and @userSecurityService.isNonAdminUser(#id))")
     public ResponseEntity<UserResponse> activateUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.activateUser(id));
@@ -207,8 +203,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PostMapping("/{id}/deactivate")
+    })    @PostMapping("/{id}/deactivate")
     @PreAuthorize("hasRole('SUPER_ADMIN') or (hasRole('ADMIN') and @userSecurityService.isNonAdminUser(#id))")
     public ResponseEntity<UserResponse> deactivateUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.deactivateUser(id));
@@ -222,12 +217,11 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PostMapping("/{id}/reset-password")
+    })    @PostMapping("/{id}/reset-password")
     @PreAuthorize("hasRole('SUPER_ADMIN') or (hasRole('ADMIN') and @userSecurityService.isNonAdminUser(#id))")
     public ResponseEntity<UserResponse> resetUserPassword(@PathVariable Long id) {
         return ResponseEntity.ok(userService.resetPassword(id));
-    }    @Operation(
+    }@Operation(
         summary = "Update profile picture", 
         description = "Updates a user's profile picture. Users can update their own pictures. Admins can update any user's picture."
     )
@@ -237,8 +231,7 @@ public class UserController {
         @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PostMapping("/{id}/profile-picture")
+    })    @PostMapping("/{id}/profile-picture")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or @userSecurityService.isCurrentUser(#id)")
     public ResponseEntity<UserResponse> updateProfilePicture(
             @PathVariable Long id,

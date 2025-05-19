@@ -42,9 +42,7 @@ public class StudentController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
-    }
-    
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    }    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable Long id) {
         try {
@@ -61,9 +59,7 @@ public class StudentController {
     public ResponseEntity<?> getAllStudents() {
         List<StudentDTO> students = studentService.getAllStudents();
         return ResponseEntity.ok(students);
-    }
-    
-    @PreAuthorize("hasRole('ADMIN')")
+    }    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         try {
@@ -74,9 +70,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.singletonMap("error", e.getMessage()));
         }
-    }
-    
-    @PreAuthorize("hasRole('ADMIN')")
+    }    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudent(
             @PathVariable Long id,
@@ -96,10 +90,7 @@ public class StudentController {
     public ResponseEntity<?> getStudentsByClass(@PathVariable String className) {
         List<StudentDTO> students = studentService.getStudentsByClass(className);
         return ResponseEntity.ok(students);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/activate")
+    }    @PreAuthorize("hasRole('ADMIN')")    @PutMapping("/{id}/activate")
     public ResponseEntity<?> activateStudent(@PathVariable Long id) {
         try {
             StudentDTO student = studentService.activateStudent(id);
@@ -108,10 +99,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.singletonMap("error", e.getMessage()));
         }
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/deactivate")
+    }    @PreAuthorize("hasRole('ADMIN')")    @PutMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivateStudent(@PathVariable Long id) {
         try {
             StudentDTO student = studentService.deactivateStudent(id);

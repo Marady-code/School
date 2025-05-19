@@ -6,8 +6,7 @@ import com.jaydee.School.entity.Teacher;
 import java.util.List;
 
 public interface TeacherService {
-	TeacherDTO createTeacher(Teacher teacher);
-	TeacherDTO getTeacherById(Long id);
+	TeacherDTO createTeacher(Teacher teacher);	TeacherDTO getTeacherById(Long id);
 	List<TeacherDTO> getAllTeachers();
 	TeacherDTO updateTeacher(Long id, Teacher teacher);
 	void deleteTeacher(Long id);

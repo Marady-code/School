@@ -19,6 +19,23 @@ spring:
     username: School
     password: 150304
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000 # Uncomment this for H2 database fallback for development/testing
+  # second-datasource:
+  #   url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  #   username: sa
+  #   password:
+  #   driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -47,7 +64,7 @@ spring:
       password: admin
 
 liquibase:
-  change-log: classpath:db/changelog/db.changelog-master.yaml
+  change-log: classpath:db/changelog/db.changelog-master.xml
   enabled: true
   default-schema: public
 

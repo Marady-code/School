@@ -18,11 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class UserSecurityService {
     
     private final UserRepository userRepository;
-    
-    /**
+      /**
      * Check if the authenticated user is the same user being accessed
-     */
-    public boolean isCurrentUser(Long userId) {
+     */    public boolean isCurrentUser(Long userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
             return false;
@@ -36,11 +34,9 @@ public class UserSecurityService {
             return currentUser != null && currentUser.getId().equals(userId);
         }
     }
-    
-    /**
+      /**
      * Check if the user with the given ID is not an admin or super admin
-     */
-    public boolean isNonAdminUser(Long userId) {
+     */    public boolean isNonAdminUser(Long userId) {
         return userRepository.findById(userId)
                 .map(user -> !hasAdminRole(user))
                 .orElse(false);

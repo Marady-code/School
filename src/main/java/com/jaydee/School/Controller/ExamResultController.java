@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jaydee.School.entity.ExamResult;
 import com.jaydee.School.entity.Student;
+import com.jaydee.School.entity.Subject;
 import com.jaydee.School.entity.Teacher;
 import com.jaydee.School.service.ExamResultService;
 
@@ -54,15 +55,15 @@ public class ExamResultController {
         Teacher teacher = new Teacher();
         teacher.setId(teacherId);
         return ResponseEntity.ok(examResultService.getTeacherResults(teacher));
-    }
-
-    @GetMapping("/student/{studentId}/subject/{subject}")
+    }    @GetMapping("/student/{studentId}/subject/{subjectId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PARENT') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<ExamResult>> getStudentSubjectResults(
             @PathVariable Long studentId,
-            @PathVariable String subject) {
+            @PathVariable Long subjectId) {
         Student student = new Student();
         student.setId(studentId);
+        Subject subject = new Subject();
+        subject.setId(subjectId);
         return ResponseEntity.ok(examResultService.getStudentSubjectResults(student, subject));
     }
 

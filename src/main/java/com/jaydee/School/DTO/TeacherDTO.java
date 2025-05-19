@@ -7,8 +7,7 @@ import lombok.Data;
 
 @Data
 public class TeacherDTO {
-
-	private long id;
+	private Long id;
 	
 	private String name;
 	
@@ -19,10 +18,7 @@ public class TeacherDTO {
 	private LocalDate dob;
 	
 	private LocalDate joinDate;
-	
-	private long userId;
-	
-	private List<Long> studentIds;
+	private Long userId;
 	
 	private List<Long> classIds;
 }

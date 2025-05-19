@@ -3,10 +3,13 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-
-    <include file="db/changelog/changes/001-initial-schema.xml"/>
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">    <include file="db/changelog/changes/001-initial-schema.xml"/>
     <include file="db/changelog/changes/002-add-user-table.xml"/>
     <include file="db/changelog/changes/003-add-student-table.xml"/>
     <include file="db/changelog/changes/004-add-teacher-to-subject.xml"/>
+    <include file="db/changelog/changes/005-remove-teacher-student-relationship.xml"/>    <include file="db/changelog/changes/006-remove-unnecessary-student-fields.xml"/>
+    <include file="db/changelog/changes/007-update-exam-result-subject-reference.xml"/>    <include file="db/changelog/changes/008-populate-exam-result-subject-reference.xml"/>
+    <include file="db/changelog/changes/009-add-profile-picture-id-to-users.xml"/>
+    <include file="db/changelog/changes/010-update-id-fields-format.xml"/>
+    <include file="db/changelog/changes/011-revert-id-fields-to-bigint.xml"/>
 </databaseChangeLog>
