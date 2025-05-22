@@ -1,13 +1,15 @@
 package com.jaydee.School.service;
 
 import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import com.jaydee.School.DTO.AuthenticationRequest;
-import com.jaydee.School.DTO.UserResponse;
-import com.jaydee.School.entity.User;
-import com.jaydee.School.Specification.UserFilter;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.jaydee.School.DTO.UserResponse;
+import com.jaydee.School.Specification.UserFilter;
+import com.jaydee.School.config.security.AuthenticationRequest;
+import com.jaydee.School.entity.User;
 
 public interface UserService extends UserDetailsService {    UserResponse getUserById(Long id);
     UserResponse getUserByEmail(String email);

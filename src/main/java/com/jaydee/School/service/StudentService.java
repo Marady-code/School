@@ -15,6 +15,4 @@ public interface StudentService {
 	StudentDTO activateStudent(Long id);
 	StudentDTO deactivateStudent(Long id);
 
-
-
 }

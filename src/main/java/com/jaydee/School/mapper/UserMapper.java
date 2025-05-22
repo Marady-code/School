@@ -27,8 +27,7 @@ public interface UserMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedAt", source = "updatedAt")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
-    @Mapping(target = "isEmailVerified", source = "isEmailVerified")
-    @Mapping(target = "lastLogin", source = "lastLogin")
+    @Mapping(target = "plainPassword", ignore = true) // Ensure plainPassword is never included
     UserResponse mapToUserResponse(User user);
 
     UserResponse toDTO(User user);
@@ -37,8 +36,6 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "profilePicture", ignore = true)
     @Mapping(target = "files", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "username", source = "username")
     User toEntity(UserResponse userResponse);
@@ -48,8 +45,6 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "profilePicture", ignore = true)
     @Mapping(target = "files", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "username", source = "username")

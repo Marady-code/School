@@ -17,6 +17,4 @@ public interface TimeTableService {
     List<TimeTableDTO> getTimeTableByAcademicYearAndTerm(String academicYear, String term);
     List<TimeTableDTO> createBulkTimeTable(List<TimeTableDTO> timeTableDTOs);
     void deleteTimeTable(Long id);
-//    void validateTimeSlot(TimeTable timeTable);
-//    boolean isTimeOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2);
 }

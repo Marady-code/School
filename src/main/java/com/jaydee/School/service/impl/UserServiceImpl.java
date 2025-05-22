@@ -17,11 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jaydee.School.DTO.AuthenticationRequest;
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.Specification.UserFilter;
 import com.jaydee.School.Specification.UserSpec;
+import com.jaydee.School.config.security.AuthenticationRequest;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.UserRepository;
@@ -78,9 +78,7 @@ public class UserServiceImpl implements UserService {
 
 		user.setPassword(passwordEncoder.encode(newPassword));
 		return userMapper.mapToUserResponse(userRepository.save(user));
-	}
-
-	@Override
+	}	@Override
 	public UserResponse login(AuthenticationRequest loginRequest) {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -121,11 +119,10 @@ public class UserServiceImpl implements UserService {
 				filter.getSortBy());
 
 		return userRepository.findAll(spec, pageable).map(userMapper::mapToUserResponse);
-	}
-
-	@Override
+	}	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		return userRepository.findByEmail(email)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 	}
 
 	@Override
@@ -136,14 +133,20 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userMapper.toDTO(userRepository.save(user));
 	}
-
 	@Transactional
 	public void requestPasswordReset(String email) {
 		userRepository.findByEmail(email).ifPresent(user -> {
 			String newPassword = generateRandomPassword();
 			user.setPassword(passwordEncoder.encode(newPassword));
 			userRepository.save(user);
-			emailService.sendPasswordResetEmail(email, newPassword);
+			
+			// Try to send email, but don't fail if it doesn't work
+			try {
+				emailService.sendPasswordResetEmail(email, newPassword);
+			} catch (Exception e) {
+				// Log the error but continue
+				System.err.println("Failed to send password reset email: " + e.getMessage());
+			}
 		});
 		// We don't throw an exception if email is not found for security reasons
 	}
@@ -155,8 +158,15 @@ public class UserServiceImpl implements UserService {
 		String newPassword = generateRandomPassword();
 		user.setPassword(passwordEncoder.encode(newPassword));
 		User savedUser = userRepository.save(user);
-		// Send email with new password
-		emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+		
+		// Try to send email, but don't fail if it doesn't work
+		try {
+			emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+		} catch (Exception e) {
+			// Log the error but continue
+			System.err.println("Failed to send password reset email: " + e.getMessage());
+		}
+		
 		return userMapper.toDTO(savedUser);
 	}
 
@@ -167,8 +177,15 @@ public class UserServiceImpl implements UserService {
 		String newPassword = generateRandomPassword();
 		user.setPassword(passwordEncoder.encode(newPassword));
 		User updatedUser = userRepository.save(user);
-		// Send email with new password
-		emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+		
+		// Try to send email, but don't fail if it doesn't work
+		try {
+			emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
+		} catch (Exception e) {
+			// Log the error but continue
+			System.err.println("Failed to send password reset email: " + e.getMessage());
+		}
+		
 		return userMapper.mapToUserResponse(updatedUser);
 	}
 

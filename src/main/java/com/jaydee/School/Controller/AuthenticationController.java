@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jaydee.School.DTO.AuthenticationRequest;
-import com.jaydee.School.DTO.AuthenticationResponse;
 import com.jaydee.School.DTO.RefreshTokenRequest;
 import com.jaydee.School.DTO.RegisterRequest;
+import com.jaydee.School.config.security.AuthenticationRequest;
+import com.jaydee.School.config.security.AuthenticationResponse;
 import com.jaydee.School.config.security.AuthenticationService;
 
 import jakarta.validation.Valid;
@@ -22,24 +22,30 @@ import lombok.RequiredArgsConstructor;
 //@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
-
-    @PostMapping("/login")
+    private final AuthenticationService authenticationService;    @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @Valid @RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
-    }
-
-    @PostMapping("/register") 
+        AuthenticationResponse response = authenticationService.authenticate(request);
+        return ResponseEntity.ok()
+                .header("Authorization", response.getType() + " " + response.getToken())
+                .header("Access-Control-Expose-Headers", "Authorization")
+                .body(response);
+    }    @PostMapping("/register") 
     public ResponseEntity<AuthenticationResponse> register(
             @Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.register(request));
-    }
-
-    @PostMapping("/refresh")
+        AuthenticationResponse response = authenticationService.register(request);
+        return ResponseEntity.ok()
+                .header("Authorization", response.getType() + " " + response.getToken())
+                .header("Access-Control-Expose-Headers", "Authorization")
+                .body(response);
+    }    @PostMapping("/refresh")
     public ResponseEntity<AuthenticationResponse> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(authenticationService.refreshToken(request));
+        AuthenticationResponse response = authenticationService.refreshToken(request);
+        return ResponseEntity.ok()
+                .header("Authorization", response.getType() + " " + response.getToken())
+                .header("Access-Control-Expose-Headers", "Authorization")
+                .body(response);
     }
 
     @PostMapping("/logout")

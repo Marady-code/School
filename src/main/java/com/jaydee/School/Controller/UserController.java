@@ -141,7 +141,6 @@ public class UserController {
         newUser.setPassword(registrationDTO.getPassword()); // Service will encrypt it
         newUser.setPhoneNumber(registrationDTO.getPhoneNumber());
         newUser.setIsActive(true);
-        newUser.setIsEmailVerified(false);
         
         // Register the user (service assigns appropriate role)
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -22,8 +22,6 @@ public class UserResponse {
     private String email;
     private String phoneNumber;
     private Boolean isActive;
-    private Boolean isEmailVerified;
-    private LocalDateTime lastLogin;
     private Set<Role> roles;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -44,8 +42,6 @@ public class UserResponse {
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
         user.setIsActive(isActive);
-        user.setIsEmailVerified(isEmailVerified);
-        user.setLastLogin(lastLogin);
         user.setRoles(roles);
         // Don't set password or other sensitive fields
         return user;

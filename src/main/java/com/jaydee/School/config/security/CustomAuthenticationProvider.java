@@ -16,31 +16,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
-        String password = authentication.getCredentials().toString();
+	@Override
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		String username = authentication.getName();
+		String password = authentication.getCredentials().toString();
 
-        UserPrincipal userPrincipal = (UserPrincipal) userService.loadUserByUsername(username);
+		UserPrincipal userPrincipal = (UserPrincipal) userService.loadUserByUsername(username);
 
-        if (passwordEncoder.matches(password, userPrincipal.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(
-                userPrincipal,
-                password,
-                userPrincipal.getAuthorities()
-            );
-        }
+		if (passwordEncoder.matches(password, userPrincipal.getPassword())) {
+			return new UsernamePasswordAuthenticationToken(userPrincipal, password, userPrincipal.getAuthorities());
+		}
 
-        throw new BadCredentialsException("Invalid username or password");
-    }
+		throw new BadCredentialsException("Invalid username or password");
+	}
 
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
-    }
+	@Override
+	public boolean supports(Class<?> authentication) {
+		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+	}
 }
-
-

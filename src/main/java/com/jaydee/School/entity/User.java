@@ -70,12 +70,6 @@ public class User implements UserDetails {
 	@Column(name = "is_active")
 	private Boolean isActive = true;
 
-	@Column(name = "is_email_verified")
-	private Boolean isEmailVerified = false;
-
-	@Column(name = "last_login")
-	private LocalDateTime lastLogin;
-
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
@@ -93,12 +87,6 @@ public class User implements UserDetails {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@Column(name = "created_by")
-	private Long createdBy;
-
-	@Column(name = "updated_by")
-	private Long updatedBy;
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Set<GrantedAuthority> authorities = new HashSet<>();
@@ -111,10 +99,9 @@ public class User implements UserDetails {
 		});
 		return authorities;
 	}
-
 	@Override
 	public String getUsername() {
-		return email; // Always use email for authentication consistency
+		return username; // Return the actual username field
 	}
 
 	@Override
