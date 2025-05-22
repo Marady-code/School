@@ -17,5 +17,6 @@ public class AuthenticationResponse {
     private boolean success;
     private String message;
     private long expiresIn;
+    private boolean passwordChangeRequired;
 }
 

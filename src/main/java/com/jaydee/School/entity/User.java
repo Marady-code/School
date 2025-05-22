@@ -66,9 +66,14 @@ public class User implements UserDetails {
 
 	@Column(name = "role", nullable = false)
 	private String role;
-
 	@Column(name = "is_active")
 	private Boolean isActive = true;
+	
+	@Column(name = "password_change_required")
+	private Boolean passwordChangeRequired = false;
+	
+	@Column(name = "last_password_change_date")
+	private LocalDateTime lastPasswordChangeDate;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))

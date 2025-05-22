@@ -53,11 +53,12 @@ public class EmailServiceImpl implements EmailService {
 		String text = "Your new password is: " + newPassword + "\n\nPlease change your password after logging in.";
 		sendEmail(to, subject, text);
 	}
-
 	@Override
-	public void sendWelcomeEmail(String to, String firstName) {
+	public void sendWelcomeEmail(String to, String message) {
 		String subject = "Welcome to School Management System";
-		String text = "Dear " + firstName + ",\n\nWelcome to our School Management System. We're glad to have you on board!";
+		String text = "Welcome to our School Management System.\n\n" + message + 
+				"\n\nPlease keep these credentials secure and change your password after first login." + 
+				"\n\nIf you have any questions, please contact the school administration.";
 		sendEmail(to, subject, text);
 	}
 

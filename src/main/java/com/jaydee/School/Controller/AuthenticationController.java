@@ -30,13 +30,16 @@ public class AuthenticationController {
 		return ResponseEntity.ok().header("Authorization", response.getType() + " " + response.getToken())
 				.header("Access-Control-Expose-Headers", "Authorization").body(response);
 	}
-
-	@PostMapping("/register")
-	public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
-		AuthenticationResponse response = authenticationService.register(request);
-		return ResponseEntity.ok().header("Authorization", response.getType() + " " + response.getToken())
-				.header("Access-Control-Expose-Headers", "Authorization").body(response);
-	}
+	// Public registration removed as part of security enhancement
+	// Users will now be created by administrators through the admin interface
+	// @PostMapping("/register")
+	// public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody
+	// RegisterRequest request) {
+	// AuthenticationResponse response = authenticationService.register(request);
+	// return ResponseEntity.ok().header("Authorization", response.getType() + " " +
+	// response.getToken())
+	// .header("Access-Control-Expose-Headers", "Authorization").body(response);
+	// }
 
 	@PostMapping("/refresh")
 	public ResponseEntity<AuthenticationResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {

@@ -105,17 +105,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(user));
     }
-      @Operation(
+    @Operation(
         summary = "Register new user", 
-        description = "Public endpoint for user self-registration. Creates a new user with default permissions."
+        description = "Admin-only endpoint for registering new users. Public registration is no longer allowed."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "User registered successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data or validation error", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
         @ApiResponse(responseCode = "409", description = "Username or email already exists", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping("/register")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         // Validate that passwords match
         if (!registrationDTO.getPassword().equals(registrationDTO.getConfirmPassword())) {

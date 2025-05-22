@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.jaydee.School.DTO.AdminUserCreationDTO;
+import com.jaydee.School.DTO.FirstLoginPasswordChangeDTO;
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.Specification.UserFilter;
 import com.jaydee.School.config.security.AuthenticationRequest;
@@ -26,7 +28,9 @@ public interface UserService extends UserDetailsService {    UserResponse getUse
     void deleteUser(Long id);
     Page<UserResponse> findUsersWithFilters(UserFilter filter);
     boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
-    UserResponse activateUser(Long id);
+    boolean existsByEmail(String email);    UserResponse activateUser(Long id);
     UserResponse deactivateUser(Long id);
+    UserResponse createUserByAdmin(AdminUserCreationDTO userDTO);
+    UserResponse changePasswordFirstLogin(Long userId, FirstLoginPasswordChangeDTO passwordChangeDTO);
+    boolean isPasswordChangeRequired(Long userId);
 }
