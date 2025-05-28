@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
     public enum UserRole {
-        ADMIN, TEACHER, STUDENT, PARENT
+        ADMIN, TEACHER, STUDENT, PARENT, SUPER_ADMIN
     }
     
     @NotBlank(message = "First name is required")

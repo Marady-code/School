@@ -60,6 +60,9 @@ public class AuthenticationService {
 			case ADMIN:
 				roleNameEnum = Role.RoleName.ADMIN;
 				break;
+			case SUPER_ADMIN:
+				roleNameEnum = Role.RoleName.SUPER_ADMIN;
+				break;
 			case TEACHER:
 				roleNameEnum = Role.RoleName.TEACHER;
 				break;

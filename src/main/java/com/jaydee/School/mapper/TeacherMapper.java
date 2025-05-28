@@ -14,13 +14,13 @@ import com.jaydee.School.entity.Teacher;
 public interface TeacherMapper {
 
 	TeacherMapper INSTANCE = Mappers.getMapper(TeacherMapper.class);
-		@Mapping(target = "name", source = "firstName")
+		@Mapping(target = "firstName", source = "firstName")
 	@Mapping(target = "subject", source = "specialization")
 	@Mapping(target = "userId", source = "user.id")
 	@Mapping(target = "classIds", ignore = true)
 	TeacherDTO toTeacherDTO(Teacher entity);
 	
-	@Mapping(target = "firstName", source = "name")
+	@Mapping(target = "firstName", ignore = true)
 	@Mapping(target = "lastName", ignore = true)
 	@Mapping(target = "gender", ignore = true)
 	@Mapping(target = "email", ignore = true)
@@ -36,7 +36,7 @@ public interface TeacherMapper {
 	Teacher toEntity(TeacherDTO teacherDTO);
 	
 	@Mapping(target = "id", ignore = true)
-	@Mapping(target = "firstName", source = "name")
+	@Mapping(target = "firstName", ignore = true)
 	@Mapping(target = "lastName", ignore = true)
 	@Mapping(target = "gender", ignore = true)
 	@Mapping(target = "email", ignore = true)

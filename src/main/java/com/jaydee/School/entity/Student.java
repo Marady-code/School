@@ -69,8 +69,6 @@ public class Student {
 
 	@Column(name = "emergency_contact")
 	private String emergencyContact;
-	@Column(name = "emergency_phone")
-	private String emergencyPhone;
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = true;

@@ -33,10 +33,6 @@ public class AdminController {
 	public ResponseEntity<AdminResponse> createAdmin(@Valid @RequestBody AdminCreateRequest request) {
 		return ResponseEntity.ok(adminService.createAdmin(request));
 	}
-	
-//	public ResponseEntity<?> getAllAdmins(){
-//		return ResponseEntity.ok(adminService.getAllAdmins(10));
-//	}
 
 	@GetMapping
 	public ResponseEntity<List<AdminResponse>> getAllAdmins() {

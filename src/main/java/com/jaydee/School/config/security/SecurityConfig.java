@@ -45,6 +45,7 @@ public class SecurityConfig {
                   // Role-based endpoints
                 .requestMatchers("/admin/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                 .requestMatchers("/admins/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
+                .requestMatchers("/auth/register").hasAnyRole("SUPER_ADMIN", "ADMIN")
                 .requestMatchers("/users/**").hasAnyRole("SUPER_ADMIN", "ADMIN") 
                 .requestMatchers("/teacher/**", "/teachers/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "TEACHER")
                 .requestMatchers("/student/**", "/students/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "TEACHER", "STUDENT")

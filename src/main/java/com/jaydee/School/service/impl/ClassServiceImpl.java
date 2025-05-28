@@ -38,13 +38,17 @@ public class ClassServiceImpl implements ClassService {
 
 	@Override
 	public List<ClassDTO> getAllClasses() {
-		return classRepository.findAll().stream().map(classMapper::toDTO).collect(Collectors.toList());
+		return classRepository.findAll()
+				.stream()
+				.map(classMapper::toDTO)
+				.collect(Collectors.toList());
 
 	}
 
 	@Override
 	public ClassDTO getClassById(Long id) {
-		ClassEntity classEntity = classRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Class", id));
+		ClassEntity classEntity = classRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFound("Class", id));
 		return classMapper.toDTO(classEntity);
 	}
 

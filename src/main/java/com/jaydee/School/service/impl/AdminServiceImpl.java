@@ -15,7 +15,6 @@ import com.jaydee.School.entity.AdminCreateRequest;
 import com.jaydee.School.entity.AdminUpdateRequest;
 import com.jaydee.School.entity.Role;
 import com.jaydee.School.entity.User;
-import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.RoleRepository;
 import com.jaydee.School.repository.UserRepository;
 import com.jaydee.School.service.AdminService;
@@ -29,13 +28,10 @@ public class AdminServiceImpl implements AdminService {
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
-	private final UserMapper userMapper;
+	// private final UserMapper userMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final EmailService emailService;
 
-	/**
-	 * Helper method to convert User to AdminResponse
-	 */
 	private AdminResponse toAdminResponse(User user) {
 		return AdminResponse.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
 				.isActive(user.getIsActive())
@@ -92,13 +88,15 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	@Transactional
 	public void deleteAdmin(Long id) {
-		User admin = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
+		User admin = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFound("Admin", id));
 		userRepository.delete(admin);
 	}
 
 	@Override
 	public AdminResponse getAdminById(Long id) {
-		User admin = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
+		User admin = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFound("Admin", id));
 		return toAdminResponse(admin);
 	}
 
