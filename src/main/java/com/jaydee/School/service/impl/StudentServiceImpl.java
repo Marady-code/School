@@ -24,10 +24,16 @@ public class StudentServiceImpl implements StudentService {
 	private final StudentMapper studentMapper;
 
 	@Override
-	public StudentDTO createStudent(Student student) {
-		Student savedStudent = studentRepository.save(student);
-		return studentMapper.toStudentDTO(savedStudent);
+	public Student createStudent(Student student) {
+		// Set sensitive/internal fields here if needed
+		// Example: set email, address, phoneNumber, etc. from other sources or logic
+		// student.setEmail(...);
+		// student.setAddress(...);
+		// student.setPhoneNumber(...);
+		// student.setEmergencyContact(...);
+		return studentRepository.save(student);
 	}
+
 	@Override
 	public StudentDTO getStudentById(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -38,6 +44,7 @@ public class StudentServiceImpl implements StudentService {
 	public List<StudentDTO> getAllStudents() {
 		return studentRepository.findAll().stream().map(studentMapper::toStudentDTO).collect(Collectors.toList());
 	}
+
 	@Override
 	public StudentDTO updateStudent(Long id, Student student) {
 		Student existingStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -46,6 +53,7 @@ public class StudentServiceImpl implements StudentService {
 		Student updatedStudent = studentRepository.save(existingStudent);
 		return studentMapper.toStudentDTO(updatedStudent);
 	}
+
 	@Override
 	public void deleteStudent(Long id) {
 		if (!studentRepository.existsById(id)) {
@@ -59,6 +67,7 @@ public class StudentServiceImpl implements StudentService {
 		return studentRepository.findByClassEntity_ClassName(className).stream().map(studentMapper::toStudentDTO)
 				.collect(Collectors.toList());
 	}
+
 	@Override
 	public StudentDTO activateStudent(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));
@@ -66,6 +75,7 @@ public class StudentServiceImpl implements StudentService {
 		Student updatedStudent = studentRepository.save(student);
 		return studentMapper.toStudentDTO(updatedStudent);
 	}
+
 	@Override
 	public StudentDTO deactivateStudent(Long id) {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Student", id));

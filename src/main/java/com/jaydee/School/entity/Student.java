@@ -47,7 +47,7 @@ public class Student {
 	@Column(name = "last_name", nullable = false)
 	private String lastName;
 
-	@NotBlank(message = "Gender is required")
+	@NotNull(message = "Gender is required")
 	@Enumerated(EnumType.STRING)
 	@Column(name = "gender", nullable = false)
 	private Gender gender;
