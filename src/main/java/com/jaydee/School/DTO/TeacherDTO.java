@@ -1,11 +1,13 @@
 package com.jaydee.School.DTO;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class TeacherDTO {
-
-	private long id;
+	private Long id;
 	
 	private String name;
 	
@@ -13,5 +15,10 @@ public class TeacherDTO {
 	
 	private String phoneNumber;
 		
-	private long version;
+	private LocalDate dob;
+	
+	private LocalDate joinDate;
+	private Long userId;
+	
+	private List<Long> classIds;
 }

@@ -1,0 +1,1 @@
+mkdir "G:\SchoolManagementSystem\SchoolBackend\src\main\resources\db\changelog"

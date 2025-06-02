@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="007" author="jaydee">
+        <comment>Update ExamResult to use Subject entity reference instead of string</comment>
+        
+        <!-- Add subject_id column -->
+        <addColumn tableName="exam_results">
+            <column name="subject_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        
+        <!-- Add foreign key constraint -->
+        <addForeignKeyConstraint 
+            baseTableName="exam_results" 
+            baseColumnNames="subject_id" 
+            constraintName="fk_exam_results_subject" 
+            referencedTableName="subjects" 
+            referencedColumnNames="id"
+            onDelete="SET NULL"/>
+        
+        <!-- Mark this as a breaking change that requires manual data migration -->
+        <comment>NOTE: After applying this migration, you need to manually update the subject_id values based on existing subject names</comment>
+        
+        <!-- We'll keep the subject column for backward compatibility temporarily -->
+    </changeSet>
+</databaseChangeLog>

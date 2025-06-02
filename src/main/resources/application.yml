@@ -1,24 +1,84 @@
 server:
   port: 8080
+  servlet:
+    context-path: /api
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    connection-timeout: 5000
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: jdbc:postgresql://localhost:5432/School
-    username: SchoolAdmin
+    username: School
     password: 150304
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000 # Uncomment this for H2 database fallback for development/testing
+  # second-datasource:
+  #   url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  #   username: sa
+  #   password:
+  #   driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
-  liquibase:
-   change-log: classpath:/db/changeLog/Liquibase-changeLog.yaml
-   enabled: false
-   clear-checksums: true
+      matching-strategy: ant-path-matcher
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: school.management.system@gmail.com
+    password: ${MAIL_APP_PASSWORD:nhgcpnryefkmotkz}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    user:
+      name: admin
+      password: admin
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
+  enabled: true
+  default-schema: public
+
+jwt:
+  secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 2592000000 # 30 days (1 month) in milliseconds
+  refresh-token:
+    expiration: 2592000000 # 30 days (1 month) in milliseconds
+
+app:
+  security:
+    jwt:
+      secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
 
 springdoc:
   swagger-ui:
@@ -28,7 +88,21 @@ springdoc:
     tags-sorter: alpha
     disable-swagger-default-url: true
     display-request-duration: true
+    tryItOutEnabled: true
+    filter: true
   api-docs:
-    path: /v3/api-docs
+    path: /api-docs
   packages-to-scan: com.jaydee.School.Controller
   paths-to-match: /**
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    com.jaydee.School: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+file:
+  upload-dir: ./uploads

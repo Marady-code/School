@@ -26,4 +26,6 @@ public class SubjectDTO {
 
     @NotBlank(message = "Term is required")
     private String term;
-} 
+    
+    private Long teacherId;
+}

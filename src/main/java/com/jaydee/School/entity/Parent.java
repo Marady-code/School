@@ -1,5 +1,12 @@
 package com.jaydee.School.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +22,7 @@ import java.util.List;
 public class Parent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "parent_id")
     private Long id;
 
     @OneToOne
@@ -29,8 +37,15 @@ public class Parent {
     )
     private List<Student> students;
 
-    private String relationship;
-    private String occupation;
+    private String relationship;    private String occupation;
     private String address;
     private String emergencyContact;
-} 
+    
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}

@@ -6,19 +6,21 @@ import org.springframework.http.HttpStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ErrorResponse {
-    private Long id;
-    private HttpStatus status;
+    private int status;
     private String message;
+    private String details;
     private LocalDateTime timestamp;
 
-    public ErrorResponse(Long id, HttpStatus status, String message) {
-        this.id = id;
-        this.status = status;
+    public ErrorResponse(HttpStatus status, String message, String details) {
+        this.status = status.value();
         this.message = message;
+        this.details = details;
         this.timestamp = LocalDateTime.now();
     }
 }

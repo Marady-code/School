@@ -20,20 +20,20 @@ import com.jaydee.School.entity.Teacher;
 import com.jaydee.School.service.PerformanceReportService;
 
 @RestController
-@RequestMapping("/api/performance-reports")
+@RequestMapping("/performance-reports")
 public class PerformanceReportController {
 
     @Autowired
     private PerformanceReportService performanceReportService;
 
     @PostMapping
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<PerformanceReport> createReport(@RequestBody PerformanceReport report) {
         return ResponseEntity.ok(performanceReportService.createReport(report));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<PerformanceReport> updateReport(
             @PathVariable Long id,
             @RequestBody PerformanceReport report) {
@@ -41,7 +41,7 @@ public class PerformanceReportController {
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PARENT') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<PerformanceReport>> getStudentReports(@PathVariable Long studentId) {
         Student student = new Student();
         student.setId(studentId);
@@ -57,7 +57,7 @@ public class PerformanceReportController {
     }
 
     @GetMapping("/student/{studentId}/term/{academicTerm}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER') or @securityService.isCurrentUser(#studentId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'PARENT') or @securityService.isCurrentUser(#studentId)")
     public ResponseEntity<List<PerformanceReport>> getStudentTermReports(
             @PathVariable Long studentId,
             @PathVariable String academicTerm) {
@@ -67,9 +67,9 @@ public class PerformanceReportController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
         performanceReportService.deleteReport(id);
         return ResponseEntity.ok().build();
     }
-} 
+}

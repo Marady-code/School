@@ -1,6 +1,7 @@
 package com.jaydee.School.Controller;
 
 import java.time.DayOfWeek;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,76 +24,79 @@ import com.jaydee.School.service.TimeTableService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/timetables")
+@RequestMapping("/time_tables")
 public class TimeTableController {
 
-    @Autowired
-    private TimeTableService timeTableService;
+	@Autowired
+	private TimeTableService timeTableService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TimeTableDTO> createTimeTable(@Valid @RequestBody TimeTableDTO timeTableDTO) {
-        return ResponseEntity.ok(timeTableService.createTimeTable(timeTableDTO));
-    }
+	@PostMapping
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<TimeTableDTO> createTimeTable(@Valid @RequestBody TimeTableDTO timeTableDTO) {
+		return ResponseEntity.ok(timeTableService.createTimeTable(timeTableDTO));
+	}
 
-    @PostMapping("/bulk")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<TimeTableDTO>> createBulkTimeTable(@Valid @RequestBody List<TimeTableDTO> timeTableDTOs) {
-        return ResponseEntity.ok(timeTableService.createBulkTimeTable(timeTableDTOs));
-    }
+	@PostMapping("/bulk")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<TimeTableDTO>> createBulkTimeTable(
+			@Valid @RequestBody List<TimeTableDTO> timeTableDTOs) {
+		return ResponseEntity.ok(timeTableService.createBulkTimeTable(timeTableDTOs));
+	}
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TimeTableDTO> updateTimeTable(
-            @PathVariable Long id,
-            @Valid @RequestBody TimeTableDTO timeTableDTO) {
-        return ResponseEntity.ok(timeTableService.updateTimeTable(id, timeTableDTO));
-    }
+	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<TimeTableDTO> updateTimeTable(@PathVariable Long id,
+			@Valid @RequestBody TimeTableDTO timeTableDTO) {
+		return ResponseEntity.ok(timeTableService.updateTimeTable(id, timeTableDTO));
+	}
 
-    @GetMapping("/class/{classId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<List<TimeTableDTO>> getClassTimeTable(@PathVariable Long classId) {
-        ClassEntity classEntity = new ClassEntity();
-        classEntity.setId(classId);
-        return ResponseEntity.ok(timeTableService.getClassTimeTable(classEntity));
-    }
+	@GetMapping("/class/{classId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
+	public ResponseEntity<List<TimeTableDTO>> getClassTimeTable(@PathVariable Long classId) {
+		ClassEntity classEntity = new ClassEntity();
+		classEntity.setId(classId);
+		return ResponseEntity.ok(timeTableService.getClassTimeTable(classEntity));
+	}
 
-    @GetMapping("/teacher/{teacherId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public ResponseEntity<List<TimeTableDTO>> getTeacherTimeTable(@PathVariable Long teacherId) {
-        Teacher teacher = new Teacher();
-        teacher.setId(teacherId);
-        return ResponseEntity.ok(timeTableService.getTeacherTimeTable(teacher));
-    }
+	@GetMapping("/teacher/{teacherId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+	public ResponseEntity<List<TimeTableDTO>> getTeacherTimeTable(@PathVariable Long teacherId) {
+		Teacher teacher = new Teacher();
+		teacher.setId(teacherId);
+		return ResponseEntity.ok(timeTableService.getTeacherTimeTable(teacher));
+	}
 
-    @GetMapping("/class/{classId}/day/{dayOfWeek}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<List<TimeTableDTO>> getClassDayTimeTable(
-            @PathVariable Long classId,
-            @PathVariable DayOfWeek dayOfWeek) {
-        ClassEntity classEntity = new ClassEntity();
-        classEntity.setId(classId);
-        return ResponseEntity.ok(timeTableService.getClassDayTimeTable(classEntity, dayOfWeek));
-    }
+	@GetMapping("/class/{classId}/day/{dayOfWeek}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
+	public ResponseEntity<List<TimeTableDTO>> getClassDayTimeTable(@PathVariable Long classId,
+			@PathVariable DayOfWeek dayOfWeek) {
+		ClassEntity classEntity = new ClassEntity();
+		classEntity.setId(classId);
+		return ResponseEntity.ok(timeTableService.getClassDayTimeTable(classEntity, dayOfWeek));
+	}
 
-    @GetMapping("/subject/{subjectId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public ResponseEntity<List<TimeTableDTO>> getTimeTableBySubject(@PathVariable Long subjectId) {
-        return ResponseEntity.ok(timeTableService.getTimeTableBySubject(subjectId));
-    }
+	@GetMapping("/subject/{subjectId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+	public ResponseEntity<List<TimeTableDTO>> getTimeTableBySubject(@PathVariable Long subjectId) {
+		return ResponseEntity.ok(timeTableService.getTimeTableBySubject(subjectId));
+	}
 
-    @GetMapping("/academic-year/{academicYear}/term/{term}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<List<TimeTableDTO>> getTimeTableByAcademicYearAndTerm(
-            @PathVariable String academicYear,
-            @PathVariable String term) {
-        return ResponseEntity.ok(timeTableService.getTimeTableByAcademicYearAndTerm(academicYear, term));
-    }
+	@GetMapping("/academic-year/{academicYear}/term/{term}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
+	public ResponseEntity<List<TimeTableDTO>> getTimeTableByAcademicYearAndTerm(@PathVariable String academicYear,
+			@PathVariable String term) {
+		return ResponseEntity.ok(timeTableService.getTimeTableByAcademicYearAndTerm(academicYear, term));
+	}
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteTimeTable(@PathVariable Long id) {
-        timeTableService.deleteTimeTable(id);
-        return ResponseEntity.ok().build();
-    }
-} 
+	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> deleteTimeTable(@PathVariable Long id) {
+		try {
+			timeTableService.deleteTimeTable(id);
+			return ResponseEntity.ok().build();
+		}catch (Exception e) {
+			return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+		}
+
+	}
+}

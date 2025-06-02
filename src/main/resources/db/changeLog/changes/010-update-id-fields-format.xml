@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">    <changeSet id="010" author="jaydee">
+        <comment>Update ID fields to use custom ID format</comment>
+        
+        <!-- Drop foreign key constraints before changing IDs -->
+        <dropForeignKeyConstraint baseTableName="students" constraintName="fk_student_user"/>
+        <dropForeignKeyConstraint baseTableName="students" constraintName="fk_student_class"/>
+        <dropForeignKeyConstraint baseTableName="teachers" constraintName="fk_teacher_user"/>
+        <dropForeignKeyConstraint baseTableName="subjects" constraintName="fk_subject_teacher"/>
+        
+        <!-- Modify users table -->
+        <modifyDataType tableName="users" columnName="user_id" newDataType="varchar(10)"/>
+        
+        <!-- Modify students table -->
+        <modifyDataType tableName="students" columnName="student_id" newDataType="varchar(10)"/>
+        <modifyDataType tableName="students" columnName="user_id" newDataType="varchar(10)"/>
+        <modifyDataType tableName="students" columnName="class_id" newDataType="varchar(10)"/>
+        
+        <!-- Modify teachers table -->
+        <modifyDataType tableName="teachers" columnName="teacher_id" newDataType="varchar(10)"/>
+        <modifyDataType tableName="teachers" columnName="user_id" newDataType="varchar(10)"/>
+        
+        <!-- Modify parents table -->
+        <modifyDataType tableName="parents" columnName="parent_id" newDataType="varchar(10)"/>
+          <!-- Add timestamp columns to parent table if they don't exist -->
+        <addColumn tableName="parents">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        
+        <addColumn tableName="parents">
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        
+        <!-- Modify roles table -->
+        <modifyDataType tableName="roles" columnName="role_id" newDataType="varchar(10)"/>
+        
+        <!-- Modify classes table -->
+        <modifyDataType tableName="classes" columnName="class_id" newDataType="varchar(10)"/>
+          <!-- Modify subjects table -->
+        <modifyDataType tableName="subjects" columnName="id" newDataType="varchar(10)"/>
+        <modifyDataType tableName="subjects" columnName="teacher_id" newDataType="varchar(10)"/>
+        
+        <!-- Recreate foreign key constraints -->
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                baseTableName="students"
+                constraintName="fk_student_user"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+                
+        <addForeignKeyConstraint baseColumnNames="class_id"
+                baseTableName="students"
+                constraintName="fk_student_class"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+                referencedColumnNames="class_id"
+                referencedTableName="classes"/>
+                
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                baseTableName="teachers"
+                constraintName="fk_teacher_user"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+                referencedColumnNames="user_id"
+                referencedTableName="users"/>
+                
+        <addForeignKeyConstraint baseColumnNames="teacher_id"
+                baseTableName="subjects"
+                constraintName="fk_subject_teacher"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"
+                referencedColumnNames="teacher_id"
+                referencedTableName="teachers"/>
+    </changeSet>
+</databaseChangeLog>

@@ -3,26 +3,34 @@ package com.jaydee.School.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import com.jaydee.School.DTO.AttendanceDTO;
 import com.jaydee.School.entity.Attendance;
+import com.jaydee.School.entity.Student;
+import com.jaydee.School.entity.Teacher;
 
 @Mapper(componentModel = "spring")
-public interface AttendanceMapper {
-	
-	AttendanceMapper INSTANCE = Mappers.getMapper(AttendanceMapper.class);
-	
-	@Mapping(source = "student.id", target = "studentId")
-	@Mapping(source = "teacher.id", target = "teacherId")
+public interface AttendanceMapper {	
 	AttendanceDTO toDTO(Attendance attendance);
 	
-	@Mapping(source = "studentId", target = "student.id")
-	@Mapping(source = "teacherId", target = "teacher.id")
 	Attendance toEntity(AttendanceDTO attendanceDTO);
 	
 	List<AttendanceDTO> toDTOList(List<Attendance> attendances);
+		default Student studentIdToStudent(Long studentId) {
+		if (studentId == null) {
+			return null;
+		}
+		Student student = new Student();
+		student.setId(studentId);
+		return student;
+	}
 	
-	
+	default Teacher teacherIdToTeacher(Long teacherId) {
+		if (teacherId == null) {
+			return null;
+		}
+		Teacher teacher = new Teacher();
+		teacher.setId(teacherId);
+		return teacher;
+	}
 }

@@ -1,18 +1,26 @@
 package com.jaydee.School.Controller;
 
-import com.jaydee.School.DTO.ApiResponse;
-import com.jaydee.School.DTO.SubjectDTO;
-import com.jaydee.School.service.SubjectService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jaydee.School.DTO.SubjectDTO;
+import com.jaydee.School.service.SubjectService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
-@RequestMapping("/api/subjects")
+@RequestMapping("/subjects")
 @RequiredArgsConstructor
 public class SubjectController {
 
@@ -20,47 +28,40 @@ public class SubjectController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<SubjectDTO>> createSubject(@Valid @RequestBody SubjectDTO subjectDTO) {
-        SubjectDTO createdSubject = subjectService.createSubject(subjectDTO);
-        return ResponseEntity.ok(ApiResponse.success("Subject created successfully", createdSubject));
+    public ResponseEntity<SubjectDTO> createSubject(@Valid @RequestBody SubjectDTO subjectDTO) {
+        return ResponseEntity.ok(subjectService.createSubject(subjectDTO));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<SubjectDTO> getSubjectById(@PathVariable Long id) {
+        return ResponseEntity.ok(subjectService.getSubjectById(id));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+    public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
+        return ResponseEntity.ok(subjectService.getAllSubjects());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<SubjectDTO>> updateSubject(
+    public ResponseEntity<SubjectDTO> updateSubject(
             @PathVariable Long id,
             @Valid @RequestBody SubjectDTO subjectDTO) {
-        SubjectDTO updatedSubject = subjectService.updateSubject(id, subjectDTO);
-        return ResponseEntity.ok(ApiResponse.success("Subject updated successfully", updatedSubject));
-    }
-
-    @GetMapping("/academic-year/{academicYear}/term/{term}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<ApiResponse<List<SubjectDTO>>> getSubjectsByAcademicYearAndTerm(
-            @PathVariable String academicYear,
-            @PathVariable String term) {
-        List<SubjectDTO> subjects = subjectService.getSubjectsByAcademicYearAndTerm(academicYear, term);
-        return ResponseEntity.ok(ApiResponse.success(subjects));
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<ApiResponse<SubjectDTO>> getSubjectById(@PathVariable Long id) {
-        SubjectDTO subject = subjectService.getSubjectById(id);
-        return ResponseEntity.ok(ApiResponse.success(subject));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
-    public ResponseEntity<ApiResponse<List<SubjectDTO>>> getAllSubjects() {
-        List<SubjectDTO> subjects = subjectService.getAllSubjects();
-        return ResponseEntity.ok(ApiResponse.success(subjects));
+        return ResponseEntity.ok(subjectService.updateSubject(id, subjectDTO));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteSubject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSubject(@PathVariable Long id) {
         subjectService.deleteSubject(id);
-        return ResponseEntity.ok(ApiResponse.success("Subject deleted successfully", null));
+        return ResponseEntity.ok().build();
     }
-} 
+
+    @GetMapping("/teacher/{teacherId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<List<SubjectDTO>> getSubjectsByTeacher(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(subjectService.getSubjectsByTeacher(teacherId));
+    }
+}
