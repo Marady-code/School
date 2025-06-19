@@ -16,6 +16,7 @@ public class AuthenticationResponseNoToken {
     private boolean success;
     private String message;
     private long expiresIn;
+    private boolean passwordChangeRequired;
     
     // Utility method to create from an AuthenticationResponse
     public static AuthenticationResponseNoToken fromAuthenticationResponse(AuthenticationResponse response) {
@@ -28,6 +29,7 @@ public class AuthenticationResponseNoToken {
                 .success(response.isSuccess())
                 .message(response.getMessage())
                 .expiresIn(response.getExpiresIn())
+                .passwordChangeRequired(response.isPasswordChangeRequired())
                 .build();
     }
 }

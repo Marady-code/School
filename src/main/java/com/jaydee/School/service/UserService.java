@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.jaydee.School.DTO.AdminUserCreationDTO;
 import com.jaydee.School.DTO.FirstLoginPasswordChangeDTO;
+import com.jaydee.School.DTO.ParentRegistrationDTO;
 import com.jaydee.School.DTO.UserResponse;
 import com.jaydee.School.Specification.UserFilter;
 import com.jaydee.School.config.security.AuthenticationRequest;
@@ -23,8 +23,9 @@ public interface UserService extends UserDetailsService {    UserResponse getUse
     UserResponse register(User user);    UserResponse resetPassword(Long id);
     void requestPasswordReset(String email);
     UserResponse resetPassword(String email);
-    UserResponse verifyEmail(String token);    UserResponse getUserProfile(Long id);
-    UserResponse updateProfilePicture(Long id, MultipartFile file);
+//    UserResponse verifyEmail(String token);
+//    void sendVerificationEmail(String email);
+    UserResponse getUserProfile(Long id);
     void deleteUser(Long id);
     Page<UserResponse> findUsersWithFilters(UserFilter filter);
     boolean existsByUsername(String username);
@@ -33,4 +34,8 @@ public interface UserService extends UserDetailsService {    UserResponse getUse
     UserResponse createUserByAdmin(AdminUserCreationDTO userDTO);
     UserResponse changePasswordFirstLogin(Long userId, FirstLoginPasswordChangeDTO passwordChangeDTO);
     boolean isPasswordChangeRequired(Long userId);
+    UserResponse registerParent(ParentRegistrationDTO registrationDTO);
+    
+//    UserResponse createStudentOrTeacher(String email, String password, String firstName, String lastName, 
+//            String phoneNumber, Role.RoleName roleName, Map<String, Object> additionalData);
 }

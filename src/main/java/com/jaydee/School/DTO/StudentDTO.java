@@ -15,17 +15,21 @@ public class StudentDTO {
 
 	private String lastName;
 
+	private String email;
+
+	private String phoneNumber;
+
 	private Gender gender;
 
 	private LocalDate dob;
 
 	private String address;
-//	
-//	private String email;
-//	
-	private String phoneNumber;
 
 	private String emergencyContact;
+
+	private String emergencyPhone;
+
+	private Boolean isActive;
 
 	private Long classId;
 

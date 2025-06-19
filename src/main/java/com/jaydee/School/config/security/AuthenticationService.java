@@ -107,6 +107,7 @@ public class AuthenticationService {
 				.email(user.getEmail()).roles(roles).success(true).message("User registered successfully")
 				.expiresIn(jwtService.getExpirationTime()).build();
 	}
+
 	@Transactional
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
 		try {
@@ -121,21 +122,20 @@ public class AuthenticationService {
 
 			// Check if password change is required on first login
 			boolean passwordChangeRequired = user.getPasswordChangeRequired() != null && user.getPasswordChangeRequired();
-			String message = passwordChangeRequired ? 
-					"Password change required" : "Authentication successful";
+			String message = passwordChangeRequired ? "Password change required" : "Authentication successful";
 
 			return AuthenticationResponse.builder()
-					.token(jwt)
-					.type("Bearer")
-					.id(user.getId())
-					.username(user.getUsername())
-					.email(user.getEmail())
-					.roles(roles)
-					.success(true)
-					.message(message)
-					.passwordChangeRequired(passwordChangeRequired)
-					.expiresIn(jwtService.getExpirationTime())
-					.build();
+				.token(jwt)
+				.type("Bearer")
+				.id(user.getId())
+				.username(user.getUsername())
+				.email(user.getEmail())
+				.roles(roles)
+				.success(true)
+				.message(message)
+				.passwordChangeRequired(passwordChangeRequired)
+				.expiresIn(jwtService.getExpirationTime())
+				.build();
 
 		} catch (AuthenticationException e) {
 			throw new CustomAuthenticationException("Invalid email or password");

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -223,49 +222,6 @@ public class UserController {
     public ResponseEntity<UserResponse> resetUserPassword(@PathVariable Long id) {
         return ResponseEntity.ok(userService.resetPassword(id));
     }@Operation(
-        summary = "Update profile picture", 
-        description = "Updates a user's profile picture. Users can update their own pictures. Admins can update any user's picture."
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Profile picture updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid file format or size", content = @Content),
-        @ApiResponse(responseCode = "403", description = "Permission denied", content = @Content),
-        @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })    @PostMapping("/{id}/profile-picture")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or @userSecurityService.isCurrentUser(#id)")
-    public ResponseEntity<UserResponse> updateProfilePicture(
-            @PathVariable Long id,
-            @RequestParam("file") MultipartFile file
-    ) {
-        return ResponseEntity.ok(userService.updateProfilePicture(id, file));
-    }
-      @Operation(
-        summary = "Check if username exists", 
-        description = "Checks if a username is already taken in the system. Used for validation during registration."
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Check completed successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/exists/username/{username}")
-    public ResponseEntity<Boolean> checkUsernameExists(@PathVariable String username) {
-        return ResponseEntity.ok(userService.existsByUsername(username));
-    }
-    
-    @Operation(
-        summary = "Check if email exists", 
-        description = "Checks if an email address is already registered in the system. Used for validation during registration."
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Check completed successfully"),
-        @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/exists/email/{email}")
-    public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
-        return ResponseEntity.ok(userService.existsByEmail(email));
-    }
-      @Operation(
         summary = "Get user profile", 
         description = "Retrieves a user's profile information. Users can view their own profiles. Admins can view any profile."
     )

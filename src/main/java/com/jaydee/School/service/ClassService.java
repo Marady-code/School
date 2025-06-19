@@ -7,7 +7,7 @@ import com.jaydee.School.entity.ClassEntity;
 
 public interface ClassService {
 
-	ClassEntity create(ClassEntity classEntity);
+	ClassDTO create(ClassDTO classDTO);
 	
 	//ClassDTO createClass(ClassDTO classDTO);
 	
@@ -15,14 +15,14 @@ public interface ClassService {
 	
 	ClassDTO getClassById(Long id);
 	
-	ClassEntity updateClass(Long id, ClassDTO classDTO);
+	ClassDTO updateClass(Long id, ClassDTO classDTO);
 	
 	void deleteClass(Long id);
 	
-    ClassEntity assignTeacherToClass(Long classId, Long teacherId);
+    ClassDTO assignTeacherToClass(Long classId, Long teacherId);
     
-    ClassEntity addStudentToClass(Long classId, Long studentId);
+    ClassDTO addStudentToClass(Long classId, Long studentId);
     
-    ClassEntity removeStudentFromClass(Long classId, Long studentId);
+    ClassDTO removeStudentFromClass(Long classId, Long studentId);
     
 }

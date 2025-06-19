@@ -1,10 +1,15 @@
 package com.jaydee.School.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
@@ -17,43 +22,55 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.jaydee.School.DTO.AdminUserCreationDTO;
 import com.jaydee.School.DTO.FirstLoginPasswordChangeDTO;
+import com.jaydee.School.DTO.ParentRegistrationDTO;
 import com.jaydee.School.DTO.UserResponse;
+import com.jaydee.School.Exception.CustomAuthenticationException;
 import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.Specification.UserFilter;
 import com.jaydee.School.Specification.UserSpec;
 import com.jaydee.School.config.security.AuthenticationRequest;
+import com.jaydee.School.entity.Parent;
 import com.jaydee.School.entity.Role;
+import com.jaydee.School.entity.Student;
 import com.jaydee.School.entity.User;
 import com.jaydee.School.mapper.UserMapper;
+import com.jaydee.School.repository.ParentRepository;
 import com.jaydee.School.repository.RoleRepository;
+import com.jaydee.School.repository.StudentRepository;
 import com.jaydee.School.repository.UserRepository;
-import com.jaydee.School.service.EmailService;
 import com.jaydee.School.service.UserService;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 @Primary
 public class UserServiceImpl implements UserService {
+
+	private static final String EMAIL_VERIFICATION_SECRET = "email-verification-secret-key";
+	private static final long EMAIL_VERIFICATION_EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final UserMapper userMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
-	private final EmailService emailService;
+	private final StudentRepository studentRepository;
+	private final ParentRepository parentRepository;
 
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
 			PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager,
-			EmailService emailService) {
+			StudentRepository studentRepository, ParentRepository parentRepository) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.userMapper = userMapper;
 		this.passwordEncoder = passwordEncoder;
 		this.authenticationManager = authenticationManager;
-		this.emailService = emailService;
+		this.studentRepository = studentRepository;
+		this.parentRepository = parentRepository;
 	}
 
 	@Override
@@ -107,7 +124,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserResponse updateUser(Long id, User user) {
-		User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		User existingUser = userRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFound("User", id));
 
 		userMapper.updateEntityFromDTO(userMapper.mapToUserResponse(user), existingUser);
 		User updatedUser = userRepository.save(existingUser);
@@ -117,7 +135,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void deleteUser(Long id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new ResourceNotFound("User", id));
 		userRepository.delete(user);
 	}
 
@@ -153,14 +172,6 @@ public class UserServiceImpl implements UserService {
 			String newPassword = generateRandomPassword();
 			user.setPassword(passwordEncoder.encode(newPassword));
 			userRepository.save(user);
-
-			// Try to send email, but don't fail if it doesn't work
-			try {
-				emailService.sendPasswordResetEmail(email, newPassword);
-			} catch (Exception e) {
-				// Log the error but continue
-				System.err.println("Failed to send password reset email: " + e.getMessage());
-			}
 		});
 		// We don't throw an exception if email is not found for security reasons
 	}
@@ -168,20 +179,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserResponse resetPassword(String email) {
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new ResourceNotFound("User with email", email));
 		String newPassword = generateRandomPassword();
 		user.setPassword(passwordEncoder.encode(newPassword));
 		User savedUser = userRepository.save(user);
 
-		// Try to send email, but don't fail if it doesn't work
-		try {
-			emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
-		} catch (Exception e) {
-			// Log the error but continue
-			System.err.println("Failed to send password reset email: " + e.getMessage());
-		}
-
-		return userMapper.toDTO(savedUser);
+		return userMapper.mapToUserResponse(savedUser);
 	}
 
 	@Override
@@ -192,33 +196,56 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(passwordEncoder.encode(newPassword));
 		User updatedUser = userRepository.save(user);
 
-		// Try to send email, but don't fail if it doesn't work
-		try {
-			emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
-		} catch (Exception e) {
-			// Log the error but continue
-			System.err.println("Failed to send password reset email: " + e.getMessage());
-		}
-
 		return userMapper.mapToUserResponse(updatedUser);
 	}
 
-	@Override
-	public UserResponse verifyEmail(String token) {
-		// TODO: Implement email verification logic
-		return null;
+	private String generateEmailVerificationToken(String email) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("email", email);
+		claims.put("type", "email-verification");
+		return Jwts.builder()
+				.setClaims(claims)
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + EMAIL_VERIFICATION_EXPIRATION))
+				.signWith(SignatureAlgorithm.HS512, EMAIL_VERIFICATION_SECRET)
+				.compact();
 	}
+
+//	@Override
+//	public UserResponse verifyEmail(String token) {
+//		try {
+//			Claims claims = Jwts.parser()
+//					.setSigningKey(EMAIL_VERIFICATION_SECRET)
+//					.parseClaimsJws(token)
+//					.getBody();
+//
+//			String email = claims.get("email", String.class);
+//			String type = claims.get("type", String.class);
+//
+//			if (!"email-verification".equals(type)) {
+//				throw new IllegalArgumentException("Invalid token type");
+//			}
+//
+//			User user = userRepository.findByEmail(email)
+//					.orElseThrow(() -> new ResourceNotFound("User with email", email));
+//
+//			User verifiedUser = userRepository.save(user);
+//
+//			return userMapper.mapToUserResponse(verifiedUser);
+//		} catch (ExpiredJwtException e) {
+//			throw new IllegalArgumentException("Email verification token has expired");
+//		} catch (JwtException e) {
+//			throw new IllegalArgumentException("Invalid email verification token");
+//		}
+//	}
+
 
 	@Override
 	public UserResponse getUserProfile(Long id) {
-		return userMapper.toDTO(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
-	}
-
-	@Override
-	public UserResponse updateProfilePicture(Long id, MultipartFile file) {
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-		// TODO: Implement profile picture upload logic
-		return userMapper.toDTO(user);
+		return userMapper.mapToUserResponse(
+			userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFound("User", id))
+		);
 	}
 
 	@Override
@@ -273,10 +300,7 @@ public class UserServiceImpl implements UserService {
 		String temporaryPassword = generateRandomPassword();
 		user.setPassword(passwordEncoder.encode(temporaryPassword));
 
-		// Set password change required flag
-		user.setPasswordChangeRequired(true);
-
-		// Handle role assignment
+		// Set password change required flag for Student/Teacher
 		Role.RoleName roleName;
 		try {
 			roleName = Role.RoleName.valueOf(userDTO.getRole());
@@ -289,19 +313,16 @@ public class UserServiceImpl implements UserService {
 		user.setRoles(Set.of(role));
 		user.setRole(roleName.name());
 
-		User savedUser = userRepository.save(user);
-
-		// Send email with credentials if requested
-		if (userDTO.isSendCredentialsEmail()) {
-			try {
-				emailService.sendWelcomeEmail(user.getEmail(),
-						"Welcome to School Management System. Your temporary password is: " + temporaryPassword
-								+ ". Please change your password when you first login.");
-			} catch (Exception e) {
-				// Log but don't fail the operation
-				System.err.println("Failed to send welcome email: " + e.getMessage());
-			}
+		// Only require password change for Student or Teacher
+		if (roleName == Role.RoleName.STUDENT || roleName == Role.RoleName.TEACHER) {
+			user.setPasswordChangeRequired(true);
+			user.setIsFirstLogin(true);
+		} else {
+			user.setPasswordChangeRequired(false);
+			user.setIsFirstLogin(false);
 		}
+
+		User savedUser = userRepository.save(user);
 
 		return userMapper.mapToUserResponse(savedUser);
 	}
@@ -309,8 +330,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserResponse changePasswordFirstLogin(Long userId, FirstLoginPasswordChangeDTO passwordChangeDTO) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFound("User", userId));
+		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User", userId));
+
+		// Only allow if password change is required
+		if (user.getPasswordChangeRequired() == null || !user.getPasswordChangeRequired()) {
+			throw new IllegalStateException("Password change is not required for this user");
+		}
 
 		// Verify temporary password
 		if (!passwordEncoder.matches(passwordChangeDTO.getTemporaryPassword(), user.getPassword())) {
@@ -322,9 +347,10 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("New password and confirmation do not match");
 		}
 
-		// Update password
+		// Update password and flags
 		user.setPassword(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
 		user.setPasswordChangeRequired(false);
+		user.setIsFirstLogin(false);
 		user.setLastPasswordChangeDate(LocalDateTime.now());
 
 		User updatedUser = userRepository.save(user);
@@ -333,8 +359,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean isPasswordChangeRequired(Long userId) {
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFound("User", userId));
+		User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User", userId));
 		return user.getPasswordChangeRequired() != null && user.getPasswordChangeRequired();
 	}
 
@@ -347,5 +372,49 @@ public class UserServiceImpl implements UserService {
 			sb.append(chars.charAt(index));
 		}
 		return sb.toString();
+	}
+
+	@Transactional
+	public UserResponse registerParent(ParentRegistrationDTO registrationDTO) {
+		// Check if email already exists
+		if (userRepository.existsByEmail(registrationDTO.getEmail())) {
+			throw new CustomAuthenticationException("Email already exists");
+		}
+
+		// Find student by phone number
+		Student student = studentRepository.findByPhoneNumber(registrationDTO.getStudentPhoneNumber()).orElseThrow(
+				() -> new CustomAuthenticationException("No student found with the provided phone number"));
+
+		// Get parent role
+		Role parentRole = roleRepository.findByName(Role.RoleName.PARENT)
+				.orElseThrow(() -> new CustomAuthenticationException("Parent role not found"));
+
+		// Create user
+		User user = new User();
+		user.setFirstName(registrationDTO.getFirstName());
+		user.setLastName(registrationDTO.getLastName());
+		user.setEmail(registrationDTO.getEmail());
+		user.setUsername(registrationDTO.getEmail());
+		user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
+		user.setPhoneNumber(registrationDTO.getPhoneNumber());
+		user.setRoles(Set.of(parentRole));
+		user.setRole(Role.RoleName.PARENT.name());
+		user.setIsActive(true);
+		user.setIsFirstLogin(false); // Parents don't need to change password on first login
+
+		// Create parent entity
+		Parent parent = new Parent();
+		parent.setUser(user);
+		parent.setRelationship(registrationDTO.getRelationship());
+		parent.setOccupation(registrationDTO.getOccupation());
+		parent.setAddress(registrationDTO.getAddress());
+		parent.setEmergencyContact(registrationDTO.getEmergencyContact());
+		parent.setStudents(List.of(student));
+
+		// Save both entities
+		user = userRepository.save(user);
+		parentRepository.save(parent);
+
+		return userMapper.mapToUserResponse(user);
 	}
 }

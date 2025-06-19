@@ -1,7 +1,10 @@
 package com.jaydee.School.DTO;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import com.jaydee.School.entity.Role;
 
@@ -23,8 +26,12 @@ public class UserResponse {
     private String phoneNumber;
     private Boolean isActive;
     private Set<Role> roles;
+    private String role;  // Added for backward compatibility
+    private Boolean passwordChangeRequired;
+    private Boolean isFirstLogin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Collection<? extends GrantedAuthority> authorities;
     
     // For password reset operations - only used transiently, not serialized to client
     private transient String plainPassword;
@@ -43,6 +50,8 @@ public class UserResponse {
         user.setPhoneNumber(phoneNumber);
         user.setIsActive(isActive);
         user.setRoles(roles);
+        user.setRole(role);
+        user.setPasswordChangeRequired(passwordChangeRequired);
         // Don't set password or other sensitive fields
         return user;
     }

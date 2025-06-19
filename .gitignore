@@ -32,3 +32,26 @@ build/
 ### VS Code ###
 .vscode/
 "/target/" 
+
+# IDE-specific files
+.factorypath
+.classpath
+.project
+.settings/
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+*.sublime-workspace
+*.sublime-project
+
+# Build directories
+target/
+build/
+out/
+bin/
+
+# Logs
+logs/
+*.log 

@@ -1,14 +1,13 @@
 package com.jaydee.School.service;
 
-import com.jaydee.School.DTO.AdminResponse;
-import com.jaydee.School.DTO.UserResponse;
-import com.jaydee.School.entity.AdminCreateRequest;
-import com.jaydee.School.entity.AdminUpdateRequest;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.jaydee.School.DTO.AdminResponse;
+import com.jaydee.School.entity.AdminCreateRequest;
+import com.jaydee.School.entity.AdminUpdateRequest;
 
 public interface AdminService {
     AdminResponse createAdmin(AdminCreateRequest request);

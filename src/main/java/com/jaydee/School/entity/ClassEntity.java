@@ -1,6 +1,7 @@
 package com.jaydee.School.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,6 +24,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.CascadeType;
 
 @Data
 @NoArgsConstructor
@@ -61,9 +63,6 @@ public class ClassEntity {
     @Column(name = "schedule")
     private String schedule;
     
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-    
     @Column(name = "start_date")
     private LocalDateTime startDate;
     
@@ -74,8 +73,8 @@ public class ClassEntity {
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
-    @OneToMany(mappedBy = "classEntity")
-    private List<Student> students;
+    @OneToMany(mappedBy = "classEntity", cascade = CascadeType.MERGE)
+    private List<Student> students = new ArrayList<>();
     
     @ManyToMany
     @JoinTable(

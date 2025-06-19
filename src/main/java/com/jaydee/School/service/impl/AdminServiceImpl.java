@@ -1,5 +1,6 @@
 package com.jaydee.School.service.impl;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,11 +16,9 @@ import com.jaydee.School.entity.AdminCreateRequest;
 import com.jaydee.School.entity.AdminUpdateRequest;
 import com.jaydee.School.entity.Role;
 import com.jaydee.School.entity.User;
-import com.jaydee.School.mapper.UserMapper;
 import com.jaydee.School.repository.RoleRepository;
 import com.jaydee.School.repository.UserRepository;
 import com.jaydee.School.service.AdminService;
-import com.jaydee.School.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +28,8 @@ public class AdminServiceImpl implements AdminService {
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
-	private final UserMapper userMapper;
+	//private final UserMapper userMapper;
 	private final PasswordEncoder passwordEncoder;
-	private final EmailService emailService;
 
 	/**
 	 * Helper method to convert User to AdminResponse
@@ -63,14 +61,6 @@ public class AdminServiceImpl implements AdminService {
 
 		// Save the admin user first
 		User savedAdmin = userRepository.save(admin);
-
-		// Try to send welcome email, but don't fail if it doesn't work
-		try {
-			emailService.sendWelcomeEmail(savedAdmin.getEmail(), savedAdmin.getUsername());
-		} catch (Exception e) {
-			// Log the error but don't prevent admin creation
-			System.err.println("Failed to send welcome email: " + e.getMessage());
-		}
 
 		return toAdminResponse(savedAdmin);
 	}
@@ -157,18 +147,38 @@ public class AdminServiceImpl implements AdminService {
 		String newPassword = generateRandomPassword();
 		admin.setPassword(passwordEncoder.encode(newPassword));
 		userRepository.save(admin);
-
-		// Try to send password reset email, but don't fail if it doesn't work
-		try {
-			emailService.sendPasswordResetEmail(admin.getEmail(), newPassword);
-		} catch (Exception e) {
-			// Log the error but don't prevent password reset
-			System.err.println("Failed to send password reset email: " + e.getMessage());
-		}
 	}
 
 	private String generateRandomPassword() {
-		// Implement a secure random password generation logic
-		return "TemporaryPassword123!";
+		String upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String lowerChars = "abcdefghijklmnopqrstuvwxyz";
+		String numbers = "0123456789";
+		String specialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+		String allChars = upperChars + lowerChars + numbers + specialChars;
+		
+		SecureRandom random = new SecureRandom();
+		StringBuilder password = new StringBuilder();
+		
+		// Ensure at least one of each character type
+		password.append(upperChars.charAt(random.nextInt(upperChars.length())));
+		password.append(lowerChars.charAt(random.nextInt(lowerChars.length())));
+		password.append(numbers.charAt(random.nextInt(numbers.length())));
+		password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+		
+		// Add remaining characters
+		for (int i = 4; i < 12; i++) {
+			password.append(allChars.charAt(random.nextInt(allChars.length())));
+		}
+		
+		// Shuffle the password
+		char[] passwordArray = password.toString().toCharArray();
+		for (int i = passwordArray.length - 1; i > 0; i--) {
+			int j = random.nextInt(i + 1);
+			char temp = passwordArray[i];
+			passwordArray[i] = passwordArray[j];
+			passwordArray[j] = temp;
+		}
+		
+		return new String(passwordArray);
 	}
 }

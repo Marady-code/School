@@ -2,6 +2,8 @@ package com.jaydee.School.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,12 +34,13 @@ public class Permission {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	private PermissionName name;
+	@Column(unique = true, nullable = false)
+	private String name;
 
 	@Column
 	private String description;
 
+	@JsonIgnore
 	@ManyToMany(mappedBy = "permissions")
 	private Set<Role> roles;
 
@@ -49,11 +52,11 @@ public class Permission {
 
 	// Explicit getter and setter methods
 	public PermissionName getName() {
-		return name;
+		return PermissionName.valueOf(name);
 	}
 
 	public void setName(PermissionName name) {
-		this.name = name;
+		this.name = name.name();
 	}
 
 	public String getDescription() {

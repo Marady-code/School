@@ -13,7 +13,9 @@ select * from performance_reports
 
 select * from role_permissions
 
-select * from users
+select * from users 
+
+select * from users where role = 'ADMIN'
 
 select * from file_storage
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jaydee.School.DTO.StudentDTO;
+import com.jaydee.School.DTO.StudentRegistrationDTO;
 import com.jaydee.School.Exception.ResourceNotFound;
 import com.jaydee.School.entity.Student;
 import com.jaydee.School.mapper.StudentMapper;
@@ -33,18 +34,29 @@ public class StudentController {
 	private final StudentMapper studentMapper;
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping
-	public ResponseEntity<?> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
+	@PostMapping("/register")
+	public ResponseEntity<?> registerStudent(@Valid @RequestBody StudentRegistrationDTO registrationDTO) {
 		try {
-			Student student = studentMapper.toEntity(studentDTO);
-			student = studentService.createStudent(student);
-			return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+			StudentDTO student = studentService.registerStudent(registrationDTO);
+			return ResponseEntity.status(HttpStatus.CREATED).body(student);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
 		}
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
+//	@PreAuthorize("hasRole('ADMIN')")
+//	@PostMapping
+//	public ResponseEntity<?> createStudent(@Valid @RequestBody StudentDTO studentDTO) {
+//		try {
+//			Student student = studentMapper.toEntity(studentDTO);
+//			student = studentService.createStudent(student);
+//			return ResponseEntity.ok(studentMapper.toStudentDTO(student));
+//		} catch (Exception e) {
+//			return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+//		}
+//	}
+
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getStudentById(@PathVariable Long id) {
 		try {
@@ -77,8 +89,7 @@ public class StudentController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentDTO studentDTO) {
 		try {
-			Student student = studentMapper.toEntity(studentDTO);
-			StudentDTO updatedStudent = studentService.updateStudent(id, student);
+			StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
 			return ResponseEntity.ok(updatedStudent);
 		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage()));

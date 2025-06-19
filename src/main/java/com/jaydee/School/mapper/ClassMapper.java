@@ -15,8 +15,6 @@ import com.jaydee.School.entity.Student;
 @Mapper(componentModel = "spring")
 public interface ClassMapper {
 
-    ClassMapper INSTANCE = Mappers.getMapper(ClassMapper.class);
-
     @Mapping(target = "id", source = "id")
     @Mapping(target = "className", source = "className")
     @Mapping(target = "teacherId", source = "teacher.id")
@@ -38,7 +36,6 @@ public interface ClassMapper {
     @Mapping(target = "roomNumber", source = "roomNumber")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "schedule", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "endDate", ignore = true)
     @Mapping(target = "subjects", ignore = true)

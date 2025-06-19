@@ -16,4 +16,7 @@ public class ClassDTO {
     private Integer capacity;
     private String roomNumber;
     private String description;
+    private String schedule;
+    private String startDate;
+    private String endDate;
 }

@@ -29,17 +29,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AttendanceController {
 
-    private final AttendanceService attendanceService;
-    private final AttendanceMapper attendanceMapper;
+	private final AttendanceService attendanceService;
+	private final AttendanceMapper attendanceMapper;
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public ResponseEntity<AttendanceDTO> markAttendance(@Valid @RequestBody AttendanceDTO attendanceDTO) {
-        return ResponseEntity.ok(attendanceService.markAttendance(attendanceDTO));
-    }
+	@PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+	public ResponseEntity<AttendanceDTO> markAttendance(@Valid @RequestBody AttendanceDTO attendanceDTO) {
+		return ResponseEntity.ok(attendanceService.markAttendance(attendanceDTO));
+	}
 
-    @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
+	@GetMapping("/student/{studentId}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT', 'PARENT')")
 	public ResponseEntity<List<AttendanceDTO>> getAttendanceByStudentId(@PathVariable Long studentId) {
 		try {
 			List<AttendanceDTO> attendances = attendanceService.getAttendanceByStudentId(studentId);
@@ -50,8 +50,8 @@ public class AttendanceController {
 
 	}
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
 	public ResponseEntity<?> UpdateAttendance(@PathVariable Long studentId, @RequestBody AttendanceDTO attendanceDTO) {
 		try {
 			Attendance attendance = attendanceMapper.toEntity(attendanceDTO);
@@ -62,9 +62,9 @@ public class AttendanceController {
 		}
 
 	}
-    
-    @DeleteMapping("{studentId}")
-    @PreAuthorize("hasRole('ADMIN')")
+
+	@DeleteMapping("{studentId}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> DeleteAttendanceByStudentId(@PathVariable Long id) {
 		try {
 			attendanceService.deleteAttendanceByStudentId(id);
@@ -75,13 +75,4 @@ public class AttendanceController {
 		}
 	}
 
-    
-    
-
-//    @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public ResponseEntity<Void> deleteAttendance(@PathVariable Long id) {
-//        attendanceService.deleteAttendance(id);
-//        return ResponseEntity.ok().build();
-//    }
 }

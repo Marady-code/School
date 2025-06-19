@@ -7,21 +7,22 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
@@ -35,17 +36,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "students")
 public class Student {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "student_id")
 	private Long id;
 
-	@NotBlank(message = "First name is required")
-	@Column(name = "first_name", nullable = false)
-	private String firstName;
-
-	@NotBlank(message = "Last name is required")
-	@Column(name = "last_name", nullable = false)
-	private String lastName;
+	@JsonManagedReference
+	@MapsId
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "student_id", referencedColumnName = "user_id")
+	private User user;
 
 	@NotNull(message = "Gender is required")
 	@Enumerated(EnumType.STRING)
@@ -60,37 +58,31 @@ public class Student {
 	@Column(name = "address")
 	private String address;
 
-	@Email(message = "Invalid email format")
-	@Column(name = "email", unique = true)
-	private String email;
-
-	@Column(name = "phone_number")
-	private String phoneNumber;
-
 	@Column(name = "emergency_contact")
 	private String emergencyContact;
+
 	@Column(name = "emergency_phone")
 	private String emergencyPhone;
 
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = true;
 
-	@ManyToOne
-	@JoinColumn(name = "class_id")
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "class_id", updatable = true)
 	private ClassEntity classEntity;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Attendance> attendanceRecords;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ExamResult> examResults;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PerformanceReport> performanceReports;
-
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private User user;
 
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
@@ -99,6 +91,12 @@ public class Student {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	@Column(name = "first_name")
+	private String firstName;
+
+	@Column(name = "last_name")
+	private String lastName;
 
 	public enum Gender {
 		MALE, FEMALE, OTHER

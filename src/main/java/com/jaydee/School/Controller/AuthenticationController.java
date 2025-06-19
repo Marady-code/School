@@ -11,6 +11,7 @@ import com.jaydee.School.DTO.RefreshTokenRequest;
 import com.jaydee.School.DTO.RegisterRequest;
 import com.jaydee.School.config.security.AuthenticationRequest;
 import com.jaydee.School.config.security.AuthenticationResponse;
+import com.jaydee.School.config.security.AuthenticationResponseNoToken;
 import com.jaydee.School.config.security.AuthenticationService;
 
 import jakarta.validation.Valid;
@@ -25,27 +26,21 @@ public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
+	public ResponseEntity<AuthenticationResponseNoToken> login(@Valid @RequestBody AuthenticationRequest request) {
 		AuthenticationResponse response = authenticationService.authenticate(request);
-		return ResponseEntity.ok().header("Authorization", response.getType() + " " + response.getToken())
-				.header("Access-Control-Expose-Headers", "Authorization").body(response);
+		return ResponseEntity.ok()
+				.header("Authorization", response.getType() + " " + response.getToken())
+				.header("Access-Control-Expose-Headers", "Authorization")
+				.body(AuthenticationResponseNoToken.fromAuthenticationResponse(response));
 	}
-	// Public registration removed as part of security enhancement
-	// Users will now be created by administrators through the admin interface
-	// @PostMapping("/register")
-	// public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody
-	// RegisterRequest request) {
-	// AuthenticationResponse response = authenticationService.register(request);
-	// return ResponseEntity.ok().header("Authorization", response.getType() + " " +
-	// response.getToken())
-	// .header("Access-Control-Expose-Headers", "Authorization").body(response);
-	// }
 
 	@PostMapping("/refresh")
-	public ResponseEntity<AuthenticationResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+	public ResponseEntity<AuthenticationResponseNoToken> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
 		AuthenticationResponse response = authenticationService.refreshToken(request);
-		return ResponseEntity.ok().header("Authorization", response.getType() + " " + response.getToken())
-				.header("Access-Control-Expose-Headers", "Authorization").body(response);
+		return ResponseEntity.ok()
+				.header("Authorization", response.getType() + " " + response.getToken())
+				.header("Access-Control-Expose-Headers", "Authorization")
+				.body(AuthenticationResponseNoToken.fromAuthenticationResponse(response));
 	}
 
 	@PostMapping("/logout")

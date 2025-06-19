@@ -1,17 +1,30 @@
 package com.jaydee.School.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+	@Override
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+		configurer
+			.defaultContentType(MediaType.APPLICATION_JSON)
+			.mediaType("json", MediaType.APPLICATION_JSON)
+			.mediaType("xml", MediaType.APPLICATION_XML)
+			.mediaType("yaml", MediaType.valueOf("application/yaml"));
+	}
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-		.allowedOriginPatterns("http://localhost:3000", "http://localhost:3001", "http://localhost:4200", "http://localhost:4201")
-		.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-		.allowedHeaders("*")
-		.allowCredentials(true);
+			.allowedOrigins("*")
+			.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+			.allowedHeaders("*")
+			.exposedHeaders("Authorization")
+			.maxAge(3600);
 	}
 }

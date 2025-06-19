@@ -21,12 +21,14 @@ import com.jaydee.School.entity.Teacher;
 import com.jaydee.School.mapper.TeacherMapper;
 import com.jaydee.School.service.TeacherService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/teachers")
 @RequiredArgsConstructor
+@Tag(name = "Teacher Management", description = "APIs for managing teachers")
 public class TeacherController {
 
 	private final TeacherService teacherService;
@@ -36,8 +38,7 @@ public class TeacherController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> createTeacher(@Valid @RequestBody TeacherDTO teacherDTO) {
 		try {
-			Teacher teacher = teacherMapper.toEntity(teacherDTO);
-			TeacherDTO createdTeacher = teacherService.createTeacher(teacher);
+			TeacherDTO createdTeacher = teacherService.createTeacher(teacherDTO);
 			return ResponseEntity.status(HttpStatus.CREATED).body(createdTeacher);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
@@ -56,7 +57,7 @@ public class TeacherController {
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllTeachers() {
 		List<TeacherDTO> teachers = teacherService.getAllTeachers();
 		return ResponseEntity.ok(teachers);
@@ -66,8 +67,7 @@ public class TeacherController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> updateTeacher(@PathVariable Long id, @Valid @RequestBody TeacherDTO teacherDTO) {
 		try {
-			Teacher teacher = teacherMapper.toEntity(teacherDTO);
-			TeacherDTO updatedTeacher = teacherService.updateTeacher(id, teacher);
+			TeacherDTO updatedTeacher = teacherService.updateTeacher(id, teacherDTO);
 			return ResponseEntity.ok(updatedTeacher);
 		} catch (ResourceNotFound e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", e.getMessage()));

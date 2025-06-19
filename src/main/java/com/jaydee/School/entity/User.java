@@ -12,6 +12,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,9 +26,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -38,8 +45,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class User implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "username", nullable = false)
@@ -68,22 +75,21 @@ public class User implements UserDetails {
 	private String role;
 	@Column(name = "is_active")
 	private Boolean isActive = true;
-	
+
+	@Column(name = "is_first_login")
+	private Boolean isFirstLogin = true;
+
 	@Column(name = "password_change_required")
 	private Boolean passwordChangeRequired = false;
-	
+
 	@Column(name = "last_password_change_date")
 	private LocalDateTime lastPasswordChangeDate;
 
+	@JsonManagedReference
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
-	@OneToOne
-	@JoinColumn(name = "profile_picture_id", referencedColumnName = "file_id")
-	private FileStorage profilePicture;
 
-	@OneToMany(mappedBy = "user")
-	private Set<FileStorage> files;
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
@@ -91,6 +97,22 @@ public class User implements UserDetails {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	@JsonBackReference
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private Student student;
+
+	@JsonBackReference
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private Teacher teacher;
+
+	@JsonBackReference
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private Parent parent;
+
+	@JsonIgnore
+	@Transient
+	private String plainPassword;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -104,6 +126,7 @@ public class User implements UserDetails {
 		});
 		return authorities;
 	}
+
 	@Override
 	public String getUsername() {
 		return username; // Return the actual username field
@@ -137,5 +160,44 @@ public class User implements UserDetails {
 		return roles.stream()
 				.flatMap(role -> role.getPermissions() != null ? role.getPermissions().stream() : Stream.empty())
 				.anyMatch(permission -> permission.getName() == permissionName);
+	}
+
+	public boolean isStudent() {
+		return student != null;
+	}
+
+	public boolean isTeacher() {
+		return teacher != null;
+	}
+
+	public boolean isParent() {
+		return parent != null;
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		createdAt = LocalDateTime.now();
+		updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updatedAt = LocalDateTime.now();
+	}
+
+	public Boolean getPasswordChangeRequired() {
+		return passwordChangeRequired;
+	}
+
+	public void setPasswordChangeRequired(Boolean passwordChangeRequired) {
+		this.passwordChangeRequired = passwordChangeRequired;
+	}
+
+	public LocalDateTime getLastPasswordChangeDate() {
+		return lastPasswordChangeDate;
+	}
+
+	public void setLastPasswordChangeDate(LocalDateTime lastPasswordChangeDate) {
+		this.lastPasswordChangeDate = lastPasswordChangeDate;
 	}
 }

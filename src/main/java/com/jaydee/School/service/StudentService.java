@@ -3,9 +3,12 @@ package com.jaydee.School.service;
 import java.util.List;
 
 import com.jaydee.School.DTO.StudentDTO;
+import com.jaydee.School.DTO.StudentRegistrationDTO;
 import com.jaydee.School.entity.Student;
 
 public interface StudentService {
+
+	StudentDTO registerStudent(StudentRegistrationDTO registrationDTO);
 
 	Student createStudent(Student student);
 
@@ -15,7 +18,7 @@ public interface StudentService {
 
 	void deleteStudent(Long id);
 
-	StudentDTO updateStudent(Long id, Student student);
+	StudentDTO updateStudent(Long id, StudentDTO studentDTO);
 
 	List<StudentDTO> getStudentsByClass(String className);
 
